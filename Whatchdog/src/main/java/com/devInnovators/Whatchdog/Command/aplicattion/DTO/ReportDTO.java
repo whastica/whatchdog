@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 
 import com.devInnovators.Whatchdog.Command.domain.model.Status;
 
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -15,12 +14,9 @@ import lombok.NoArgsConstructor;
 public class ReportDTO {
 
     private String id;
-    @NotNull
     private String description;
-    @NotNull
     private CitizenDTO citizen;
-    @NotNull
-    private ProblemDTO problem;
+    private IssueDTO issue;
     private Status status;
     private CoordinatesDTO coordinates;
     private LocalDateTime createDate;

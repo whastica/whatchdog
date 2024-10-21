@@ -1,6 +1,8 @@
 package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
 
-import jakarta.validation.constraints.NotNull;
+
+import com.devInnovators.Whatchdog.Command.domain.model.Priority;
+
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -8,11 +10,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ProblemDTO {
+public class IssueDTO {
     
     private String id;
-    @NotNull
     private String category;
-    @NotNull
-    private String priority;
+    private Priority priority;
 }
