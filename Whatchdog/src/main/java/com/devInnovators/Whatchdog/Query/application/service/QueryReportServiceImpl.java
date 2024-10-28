@@ -1,9 +1,11 @@
 package com.devInnovators.Whatchdog.Query.application.service;
 
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
+
 
 
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
@@ -15,7 +17,7 @@ import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
 import com.devInnovators.Whatchdog.Query.domain.model.Citizen;
 import com.devInnovators.Whatchdog.Query.domain.model.Coordinates;
 import com.devInnovators.Whatchdog.Query.domain.model.Issue;
-import com.devInnovators.Whatchdog.Query.domain.model.Status;
+
 
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 import com.devInnovators.Whatchdog.Query.domain.model.Report;
@@ -43,6 +45,11 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
     public List<ReportDTO> findAllReports() {
         List<Report> reports = reportRepository.findAll();
+        
+        if (reports.isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reports found");
+            
+        }
         return reports.stream()
                       .map(this::convertReportToDTO)
                       .collect(Collectors.toList());
