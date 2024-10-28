@@ -41,51 +41,57 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found with ID: " + id));
         return convertReportToDTO(report);
     }
-    // Método que convierte un reporte a un DTO
-    private ReportDTO convertReportToDTO(Report report) {
-        ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setId(report.getId());
-        reportDTO.setDescription(report.getDescription());
-        reportDTO.setCitizen(convertCitizenToDTO(report.getCitizen()));
-        reportDTO.setIssue(convertIssueToDTO(report.getIssue()));
-        reportDTO.setStatus(report.getStatus());
-        reportDTO.setCoordinates(convertCoordinatesToDTO(report.getCoordinates()));
-        reportDTO.setCreateDate(report.getCreateDate());
-        reportDTO.setUpdateDate(report.getUpdateDate());
-        reportDTO.setFotoUrl(report.getFotoUrl());
-        return reportDTO;
-    }
-    // Método que convierte un ciudadano a un DTO
-    private CitizenDTO convertCitizenToDTO(Citizen citizen) {
-        if (citizen == null) {
-            return null;
-        }
-        CitizenDTO citizenDTO = new CitizenDTO();
-        citizenDTO.setId(citizen.getId());
-        citizenDTO.setName(citizen.getName());
-        citizenDTO.setEmail(citizen.getEmail());
-        citizenDTO.setPhone(citizen.getPhone());
-        return citizenDTO;
-    }
-    // Método que convierte un Issuea a un DTO
-    private IssueDTO convertIssueToDTO(Issue issue) {
-        if (issue == null) {
-            return null; 
-        }
-        IssueDTO issueDTO = new IssueDTO();
-        issueDTO.setId(issue.getId());
-        issueDTO.setCategory(issue.getCategory());
-        issueDTO.setPriority(issue.getPriority());
-        return issueDTO;
-    }
-    // Método que convierte unas coordenadas a un DTO
-    private CoordinatesDTO convertCoordinatesToDTO(Coordinates coordinates) {
-        CoordinatesDTO coordinatesDTO = new CoordinatesDTO();
-        coordinatesDTO.setLatitude(coordinates.getLatitude());
-        coordinatesDTO.setLongitude(coordinates.getLongitude());
-        return coordinatesDTO;
+    public List<ReportDTO> findAllReports() {
+        List<Report> reports = reportRepository.findAll();
+        return reports.stream()
+                      .map(this::convertReportToDTO)
+                      .collect(Collectors.toList());
     }
 
+    // Método privado para la conversión de Report a ReportDTO
+    private ReportDTO convertReportToDTO(Report report) {
+        CitizenDTO citizenDTO = convertCitizenToDTO(report.getCitizen());
+        IssueDTO issueDTO = convertIssueToDTO(report.getIssue());
+        CoordinatesDTO coordinatesDTO = convertCoordinatesToDTO(report.getCoordinates());
+
+        return new ReportDTO(
+                report.getId(),
+                report.getDescription(),
+                citizenDTO,
+                issueDTO,
+                report.getStatus(),
+                coordinatesDTO,
+                report.getCreateDate(),
+                report.getUpdateDate(),
+                report.getFotoUrl()
+        );
+    }
+
+    // Métodos privados para convertir entidades anidadas a sus respectivos DTOs
+    private CitizenDTO convertCitizenToDTO(Citizen citizen) {
+        return new CitizenDTO(
+                citizen.getId(),
+                citizen.getName(),
+                citizen.getEmail(),
+                citizen.getPhone()
+        );
+    }
+
+    private IssueDTO convertIssueToDTO(Issue issue) {
+        return new IssueDTO(
+                issue.getId(),
+                issue.getCategory(),
+                issue.getPriority()
+        );
+    }
+
+    private CoordinatesDTO convertCoordinatesToDTO(Coordinates coordinates) {
+        return new CoordinatesDTO(
+                coordinates.getLatitude(),
+                coordinates.getLongitude()
+        );
+    }
+    
   /*   @Override
     public List<ReportDTO> findReportByEstado(Status status) {
         List<Report> reports = reportRepository.findByEstado(status);

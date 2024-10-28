@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Document  
 
 public class Report {
-     @Id
+    @Id
     private String id;
     private String description;
     

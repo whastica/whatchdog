@@ -11,6 +11,8 @@ public interface QueryReportServiceInterface {
 
     ReportDTO findReportById(String id);
 
+    List<ReportDTO> findAllReports();
+
    /*  List<ReportDTO> findReportByCitizenId(String id);
 
     List<ReportDTO> findReportByEstado(Status status); */

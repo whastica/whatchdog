@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 public class Issue {
     @Id
     private String id;
-    private String description;
+   
     private String category;
     private String priority;
     // operaciones o metodos de dominio

@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
+@NoArgsConstructor  // Genera un constructor sin argumentos
 @Document
 public class AdminC {
     

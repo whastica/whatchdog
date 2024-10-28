@@ -29,6 +29,11 @@ public class QueryReportController {
         ReportDTO reporte = reportService.findReportById(id); // Si no se encuentra, lanzará una excepción
         return ResponseEntity.ok(reporte); // Retorna 200 OK con el reporte
     }
+    @GetMapping
+    public ResponseEntity<List<ReportDTO>> getReportes() {
+        List<ReportDTO> reportes = reportService.findAllReports();
+        return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
+    }
    /*  // Endpoint para obtener un reporte por su estado
     @GetMapping("/status/{status}")
     public ResponseEntity<List<ReportDTO>> getReporteByStatus(@PathVariable String status) {
