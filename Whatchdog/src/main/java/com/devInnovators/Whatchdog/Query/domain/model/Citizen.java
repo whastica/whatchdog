@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document
+@Document(collection = "citizen")
 public class Citizen {
     
     @Id // Indica que este campo es la clave primaria en MongoDB
