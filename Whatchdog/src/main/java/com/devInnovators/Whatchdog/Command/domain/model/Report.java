@@ -1,9 +1,6 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
-
-import com.devInnovators.Whatchdog.Command.aplication.DTO.ReportDTO;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -13,7 +10,6 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
 import lombok.AllArgsConstructor;
@@ -21,8 +17,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@AllArgsConstructor
+@Data                   // Genera los getters, setters, toString, equals, y hashCode.
+@AllArgsConstructor      // Genera un constructor con todos los campos.
 @NoArgsConstructor
 public class Report {
 
@@ -31,68 +27,34 @@ public class Report {
 
     private String description;
 
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)  // Asociación con Citizen
+    @JoinColumn(name = "citizen_id")
+    private Citizen citizen;
+
+    @ManyToOne(fetch = FetchType.LAZY)  // Asociación con Issue
+    @JoinColumn(name = "issue_id")
+    private Issue issue;
+
+    @Enumerated(EnumType.STRING)  // Mapeo del enum Status como String en la BD
     private Status status;
 
-    @Embedded
+    @Embedded   // Mapeo de las coordenadas como un objeto embebido
     private Coordinates coordinates;
 
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
 
     private String fotoUrl;
+
     private String idAdmin;
-    private String idCitizen;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "issue_id")
-    private Issue issue;
-
-    @Enumerated(EnumType.STRING)
-    private CategoryIssue categoryIssue;
-
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Comment> listComments;
-
-    private int numLikes;
-    private int numDislikes;
-
-    // Constructor que acepta ReportDTO
-    public Report(ReportDTO reportDTO) {
-        this.id = reportDTO.getId();
-        this.description = reportDTO.getDescription();
-        this.status = reportDTO.getStatus();
-        this.coordinates = reportDTO.getCoordinates();
-        this.fotoUrl = reportDTO.getFotoUrl();
-        this.idAdmin = reportDTO.getIdAdmin();
-        this.idCitizen = reportDTO.getIdCitizen();
-        this.categoryIssue = reportDTO.getCategoryIssue();
-        this.numLikes = reportDTO.getNumLikes();
-        this.numDislikes = reportDTO.getNumDislikes();
-        // La creación y actualización de fechas se maneja automáticamente
-    }
-
-    // Método para actualizar a partir de ReportDTO
-    public void updateFromDTO(ReportDTO reportDTO) {
-        this.description = reportDTO.getDescription();
-        this.status = reportDTO.getStatus();
-        this.coordinates = reportDTO.getCoordinates();
-        this.fotoUrl = reportDTO.getFotoUrl();
-        this.idAdmin = reportDTO.getIdAdmin();
-        this.idCitizen = reportDTO.getIdCitizen();
-        this.categoryIssue = reportDTO.getCategoryIssue();
-        this.numLikes = reportDTO.getNumLikes();
-        this.numDislikes = reportDTO.getNumDislikes();
-        // La actualización de fecha se maneja en el método `onUpdate`
-    }
 
     @PrePersist
     protected void onCreate() {
-        createDate = LocalDateTime.now();
+        createDate = LocalDateTime.now();   // Inicialización automática en creación
     }
 
     @PreUpdate
     protected void onUpdate() {
-        updateDate = LocalDateTime.now();
+        updateDate = LocalDateTime.now();   // Actualización automática al modificar
     }
 }

@@ -1,15 +1,10 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
-import java.util.List;
-
-import com.devInnovators.Whatchdog.Command.aplication.DTO.IssueDTO;
-
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,48 +18,13 @@ public class Issue {
     @Id
     private String id;
 
-    @Enumerated(EnumType.STRING)
-    private CategoryIssue categoryIssue;
+    @NotNull(message = "La categoría no puede ser nula")
+    //@Size(min = 3, max = 50, message = "La categoría debe tener entre 3 y 50 caracteres")
+    private String category;
 
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING)  // Guarda el enum como una cadena en la base de datos
+    @NotNull(message = "La prioridad no puede ser nula")
     private Priority priority;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    private List<Report> listReports;
-
-    private String idAdminC;
-
-    @Enumerated(EnumType.STRING)
-    private ResolutionTeam resolutionTeam;
-
-    @Enumerated(EnumType.STRING)
-    private StatusIssue status;
-
-    // Constructor que acepta IssueDTO
-    public Issue(IssueDTO issueDTO) {
-        this.id = issueDTO.getId();
-        this.categoryIssue = issueDTO.getCategoryIssue();
-        this.priority = issueDTO.getPriority();
-        this.idAdminC = issueDTO.getIdAdminC();
-        this.resolutionTeam = issueDTO.getResolutionTeam();
-        // La lista de reportes se debe gestionar manualmente
-    }
-
-    // Método para actualizar a partir de IssueDTO
-    public void updateFromDTO(IssueDTO issueDTO) {
-        this.categoryIssue = issueDTO.getCategoryIssue();
-        this.priority = issueDTO.getPriority();
-        this.idAdminC = issueDTO.getIdAdminC();
-        this.resolutionTeam = issueDTO.getResolutionTeam();
-        // La lista de reportes se debe gestionar manualmente
-    }
-
-    // Métodos setStatus y setPriority
-    public void setStatus(StatusIssue status) {
-        this.status = status;
-    }
-
-    public void setPriority(Priority priority) {
-        this.priority = priority;
-    }
+    // Métodos de dominio adicionales según tus necesidades
 }
