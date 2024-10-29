@@ -1,6 +1,7 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -42,11 +43,25 @@ public class Report {
     private Coordinates coordinates;
 
     private LocalDateTime createDate;
+    
     private LocalDateTime updateDate;
 
     private String fotoUrl;
 
     private String idAdmin;
+
+    private String idIssue;
+
+    private String idCitizen;
+
+    private CategoryIssue categoryIssue;
+
+    private Long numLikes;
+
+    private Long numDislikes;
+
+    private List<Comment> comments;
+
 
     @PrePersist
     protected void onCreate() {

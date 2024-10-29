@@ -1,11 +1,9 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
-
-import java.util.List;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -14,13 +12,13 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AdminC {
+public class Comment {
 
     @Id
     private String id;
-    @NotNull
-    private String name;
-
-    private List<Report> AsignedReports;
+    private String description;
+    private String idCitizen;
+    private LocalDateTime createDate;
+    private String idReport;
 
 }

@@ -105,7 +105,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
             report.getId(),
             report.getDescription(),
             new CitizenDTO(report.getCitizen().getId(), report.getCitizen().getName(), report.getCitizen().getEmail(), report.getCitizen().getPhone()),
-            new IssueDTO(report.getIssue().getId(), report.getIssue().getCategory(), report.getIssue().getPriority()),
+            new IssueDTO(report.getIssue().getId(), report.getIssue().getCategoryIssue(), report.getIssue().getPriority()),
             report.getStatus(),
             new CoordinatesDTO(report.getCoordinates().getLatitude(), report.getCoordinates().getLongitude()),
             report.getCreateDate(),

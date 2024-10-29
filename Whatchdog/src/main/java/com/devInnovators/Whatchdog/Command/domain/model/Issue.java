@@ -1,5 +1,7 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
+import java.util.List;    
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -20,11 +22,19 @@ public class Issue {
 
     @NotNull(message = "La categoría no puede ser nula")
     //@Size(min = 3, max = 50, message = "La categoría debe tener entre 3 y 50 caracteres")
-    private String category;
+    private String categoryIssue;
 
     @Enumerated(EnumType.STRING)  // Guarda el enum como una cadena en la base de datos
     @NotNull(message = "La prioridad no puede ser nula")
     private Priority priority;
+
+    private StatusIssue statusIssue;
+
+    private List<Report> ReportList;
+
+    private String idAdminc;
+
+    private ResolutionTeam resolutionTeam;
 
     // Métodos de dominio adicionales según tus necesidades
 }
