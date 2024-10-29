@@ -1,15 +1,14 @@
 package com.devInnovators.Whatchdog.Command.aplicattion.service;
 
 import java.time.LocalDateTime;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
-import com.devInnovators.Whatchdog.Command.aplicattion.DTO.CitizenDTO;
-import com.devInnovators.Whatchdog.Command.aplicattion.DTO.CoordinatesDTO;
-import com.devInnovators.Whatchdog.Command.aplicattion.DTO.IssueDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.interfaces.CommandReportServiceInterface;
 import com.devInnovators.Whatchdog.Command.domain.model.Citizen;
+import com.devInnovators.Whatchdog.Command.domain.model.Comment;
 import com.devInnovators.Whatchdog.Command.domain.model.Coordinates;
 import com.devInnovators.Whatchdog.Command.domain.model.Issue;
 import com.devInnovators.Whatchdog.Command.domain.model.Report;
@@ -35,10 +34,10 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     @Override
     public ReportDTO createReport(ReportDTO reportDTO) {
         // Cargar las entidades de Citizen y Problem
-        Citizen citizen = citizenRepository.findById(reportDTO.getCitizen().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getCitizen().getId()));
-        Issue issue = issueRepository.findById(reportDTO.getIssue().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIssue().getId()));
+        Citizen citizen = citizenRepository.findById(reportDTO.getCitizenId())
+            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getCitizenId()));
+        Issue issue = issueRepository.findById(reportDTO.getIssueId())
+            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIssueId()));
 
         // Convertir DTO a entidad
         Report report = new Report();
@@ -67,10 +66,10 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
             .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + id));
 
         // Cargar las entidades de Citizen y Problem
-        Citizen citizen = citizenRepository.findById(reportDTO.getCitizen().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getCitizen().getId()));
-        Issue issue = issueRepository.findById(reportDTO.getIssue().getId())
-            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIssue().getId()));
+        Citizen citizen = citizenRepository.findById(reportDTO.getCitizenId())
+            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getCitizenId()));
+        Issue issue = issueRepository.findById(reportDTO.getIssueId())
+            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIssueId()));
 
         // Actualizar los campos del reporte
         existingReport.setDescription(reportDTO.getDescription());
@@ -101,16 +100,28 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
 
     // Método para convertir Report a ReportDTO
     private ReportDTO convertToDTO(Report report) {
-        return new ReportDTO(
-            report.getId(),
-            report.getDescription(),
-            new CitizenDTO(report.getCitizen().getId(), report.getCitizen().getName(), report.getCitizen().getEmail(), report.getCitizen().getPhone()),
-            new IssueDTO(report.getIssue().getId(), report.getIssue().getCategoryIssue(), report.getIssue().getPriority()),
-            report.getStatus(),
-            new CoordinatesDTO(report.getCoordinates().getLatitude(), report.getCoordinates().getLongitude()),
-            report.getCreateDate(),
-            report.getUpdateDate(),
-            report.getFotoUrl()
-        );
+        ReportDTO dto = new ReportDTO();
+        dto.setId(report.getId());
+        dto.setDescription(report.getDescription());
+        dto.setStatus(report.getStatus());
+        dto.setCategoryIssue(report.getCategoryIssue());
+        dto.setCoordinates(report.getCoordinates());
+        dto.setCreateDate(report.getCreateDate());
+        dto.setUpdateDate(report.getUpdateDate());
+        dto.setFotoUrl(report.getFotoUrl());
+        dto.setNumLikes(report.getNumLikes());
+        dto.setNumDislikes(report.getNumDislikes());
+    
+        // Asigna IDs de entidades relacionadas
+        dto.setCitizenId(report.getCitizen() != null ? report.getCitizen().getId() : null);
+        dto.setIssueId(report.getIssue() != null ? report.getIssue().getId() : null);
+        dto.setAdmincId(report.getAdminc() != null ? report.getAdminc().getId() : null);
+    
+        // Convierte lista de comentarios a lista de IDs
+        dto.setCommentIds(report.getComments().stream()
+                               .map(Comment::getId)
+                               .collect(Collectors.toList()));
+    
+        return dto;
     }
 }
