@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.Whatchdog.Query.domain.model;
 
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;

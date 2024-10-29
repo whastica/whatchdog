@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.Whatchdog.Query.domain.model;
 
 import java.util.List;
 
@@ -22,5 +22,5 @@ public class AdminC {
     private String name;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Report> assignedReports;
+    private List<QueryReport> assignedReports;
 }

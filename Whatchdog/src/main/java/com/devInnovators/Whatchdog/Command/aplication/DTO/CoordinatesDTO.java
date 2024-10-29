@@ -1,15 +1,13 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.Whatchdog.Command.aplication.DTO;
 
-import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@Embeddable
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Coordinates {
+public class CoordinatesDTO {
     private double latitude;
     private double longitude;
 }

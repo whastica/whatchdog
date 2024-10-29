@@ -1,9 +1,9 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.Whatchdog.Query.domain.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.devInnovators.Whatchdog.Command.aplication.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.aplication.DTO.ReportDTO;
 
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Report {
+public class QueryReport {
 
     @Id
     private String id;
@@ -46,7 +46,7 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "issue_id")
-    private Issue issue;
+    private QueryIssue issue;
 
     @Enumerated(EnumType.STRING)
     private CategoryIssue categoryIssue;
@@ -58,7 +58,7 @@ public class Report {
     private int numDislikes;
 
     // Constructor que acepta ReportDTO
-    public Report(ReportDTO reportDTO) {
+    public QueryReport(ReportDTO reportDTO) {
         this.id = reportDTO.getId();
         this.description = reportDTO.getDescription();
         this.status = reportDTO.getStatus();

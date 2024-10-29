@@ -1,8 +1,8 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.Whatchdog.Query.domain.model;
 
 import java.util.List;
 
-import com.devInnovators.Whatchdog.Command.aplication.DTO.IssueDTO;
+import com.devInnovators.Whatchdog.Query.aplication.DTO.IssueDTO;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class Issue {
+public class QueryIssue {
 
     @Id
     private String id;
@@ -30,7 +30,7 @@ public class Issue {
     private Priority priority;
 
     @OneToMany(fetch = FetchType.LAZY)
-    private List<Report> listReports;
+    private List<QueryReport> listReports;
 
     private String idAdminC;
 
@@ -41,7 +41,7 @@ public class Issue {
     private StatusIssue status;
 
     // Constructor que acepta IssueDTO
-    public Issue(IssueDTO issueDTO) {
+    public QueryIssue(IssueDTO issueDTO) {
         this.id = issueDTO.getId();
         this.categoryIssue = issueDTO.getCategoryIssue();
         this.priority = issueDTO.getPriority();

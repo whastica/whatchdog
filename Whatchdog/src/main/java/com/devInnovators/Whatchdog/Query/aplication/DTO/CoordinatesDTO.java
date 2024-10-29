@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
+package com.devInnovators.Whatchdog.Query.aplication.DTO;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CoordinatesDTO {
-
-    
-    private Double latitude;
-
-    private Double longitude;
-
+    private double latitude;
+    private double longitude;
 }
