@@ -1,20 +1,24 @@
-package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
+package com.DevInnovators.WatchdogNotificacion.domain.model;
 
 import java.time.LocalDateTime;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+@Entity
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CommentDTO {
+public class Comment {
 
+    @Id
     private String id;
     private String description;
-    private String citizenId;
+    private String idCitizen;
     private LocalDateTime createDate;
-    private String reportId;
+    private String idReport;
 
 }
