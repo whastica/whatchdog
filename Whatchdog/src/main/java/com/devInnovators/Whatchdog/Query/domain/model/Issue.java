@@ -1,6 +1,6 @@
 package com.devInnovators.Whatchdog.Query.domain.model;
 
-import org.hibernate.engine.spi.Resolution;
+
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -20,14 +20,14 @@ public class Issue {
     private String id;
    
     private String categoryIssue;
-    @DBRef(lazy = true) 
+
     private StatusIssue statusIssue;
     private String priority;
     @DBRef(lazy = true) 
     private List<Report> reportsList;
     @DBRef(lazy = true) 
     private AdminC idAdminC;
-    @DBRef(lazy = true) 
+   
     private ResolutionTeam resolutionTeam;
     // operaciones o metodos de dominio
 

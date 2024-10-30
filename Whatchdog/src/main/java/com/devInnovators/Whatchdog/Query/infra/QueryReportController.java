@@ -3,13 +3,16 @@ package com.devInnovators.Whatchdog.Query.infra;
 
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 
+import com.devInnovators.Whatchdog.Query.domain.model.Status;
+
+
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import com.devInnovators.Whatchdog.Query.domain.model.Status;
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
 
 
@@ -34,33 +37,27 @@ public class QueryReportController {
         List<ReportDTO> reportes = reportService.findAllReports();
         return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
     }
-   /*  // Endpoint para obtener un reporte por su estado
-    @GetMapping("/status/{status}")
-    public ResponseEntity<List<ReportDTO>> getReporteByStatus(@PathVariable String status) {
-        Status statusEnum;
-        try {
-            // Convertir el String a un enum Status
-            statusEnum = Status.valueOf(status); // Lanza IllegalArgumentException si el String no es un valor válido
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().build(); // Maneja el caso donde el String no es válido
-        }
-
-        // Llamada correcta al servicio
-        List<ReportDTO> reportes = reportService.findReportByEstado(statusEnum);
-        return ResponseEntity.ok(reportes); // Devuelve la lista de reportes
-    }
     
+    @GetMapping("/status/{status}")
+    public ResponseEntity<List<ReportDTO>> getReportesByStatus(@PathVariable Status status) {
+        List<ReportDTO> reportes = reportService.findReportsByStatus(status);
+        return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
+    }
 
-    // Endpoint para obtener un reporte por ciudadano
-    @GetMapping("/citizen/{citizenId}")
-    public ResponseEntity<List<ReportDTO>> getReporteByCitizen(@PathVariable String id) {
-        List<ReportDTO> reporte = reportService.findReportByCitizenId(id);
-        if (reporte != null) {
-            return ResponseEntity.ok(reporte);  // Retorna 200 OK con el reporte
-        } else {
-            return ResponseEntity.notFound().build();  // Retorna 404 si no encuentra el reporte
-        }
-    } */
+    @GetMapping("/category/{categoryIssue}")
+    public ResponseEntity<List<ReportDTO>> getReportesByCategoryIssue(@PathVariable String categoryIssue) {
+        List<ReportDTO> reportes = reportService.getReportsByCategoryIssue(categoryIssue);
+        return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
+    }
+
+    @GetMapping("/admin/{adminId}")
+    public ResponseEntity<List<ReportDTO>> getReportesByAdminId(@PathVariable String adminId) {
+        // Obtiene los reportes usando el servicio
+        List<ReportDTO> reportes = reportService.getReportsByAdminId(adminId);
+        
+        // Retorna 200 OK con la lista de reportes
+        return ResponseEntity.ok(reportes);
+    }
 
 
 }
