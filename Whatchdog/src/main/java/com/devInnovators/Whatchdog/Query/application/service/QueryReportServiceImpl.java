@@ -20,7 +20,7 @@ import com.devInnovators.Whatchdog.Query.domain.model.Issue;
 
 
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
-import com.devInnovators.Whatchdog.Query.domain.model.Report;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -39,12 +39,12 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
 
     public ReportDTO findReportById(String id) {
-        Report report = reportRepository.findById(id)
+        QueryReport report = reportRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found with ID: " + id));
         return convertReportToDTO(report);
     }
     public List<ReportDTO> findAllReports() {
-        List<Report> reports = reportRepository.findAll();
+        List<QueryReport> reports = reportRepository.findAll();
         
         if (reports.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reports found");
@@ -56,7 +56,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
 
     // Método privado para la conversión de Report a ReportDTO
-    private ReportDTO convertReportToDTO(Report report) {
+    private ReportDTO convertReportToDTO(QueryReport report) {
         CitizenDTO citizenDTO = convertCitizenToDTO(report.getCitizen());
         IssueDTO issueDTO = convertIssueToDTO(report.getIssue());
         CoordinatesDTO coordinatesDTO = convertCoordinatesToDTO(report.getCoordinates());
