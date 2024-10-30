@@ -10,7 +10,7 @@ import com.devInnovators.Whatchdog.Sync.serviceSync.SyncService;
 
 @RestController
 public class SyncController {
-
+/* 
     @Autowired
     private SyncService syncService;
 
@@ -26,5 +26,5 @@ public class SyncController {
     public ResponseEntity<String> syncAllReports() {
         syncService.syncAllReports();
         return ResponseEntity.ok("All reports synchronized successfully");
-    }
+    } */
 }
