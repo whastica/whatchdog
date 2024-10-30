@@ -25,7 +25,7 @@ public class SyncService {
     @Autowired
     private QueryReportRepository queryReportRepository;
 
-  // Método para sincronizar un solo reporte por su ID
+  /* 
     @Transactional
     public void syncReportById(String reportId) {
         // Buscar el reporte en la base de datos de comandos
@@ -90,5 +90,5 @@ public class SyncService {
         } else {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in MongoDB");
         }
-    }
+    } */
 }
