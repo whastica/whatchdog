@@ -1,29 +1,24 @@
 package com.devInnovators.Whatchdog.Query.application.service;
 
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
-import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
-
-import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 import com.devInnovators.Whatchdog.Query.application.DTO.CitizenDTO;
-import com.devInnovators.Whatchdog.Query.application.DTO.IssueDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
+import com.devInnovators.Whatchdog.Query.application.DTO.IssueDTO;
+import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 import com.devInnovators.Whatchdog.Query.domain.model.Citizen;
 import com.devInnovators.Whatchdog.Query.domain.model.Coordinates;
 import com.devInnovators.Whatchdog.Query.domain.model.Issue;
-
-
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 import com.devInnovators.Whatchdog.Query.domain.model.Report;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 
 
 
@@ -57,8 +52,8 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
     // Método privado para la conversión de Report a ReportDTO
     private ReportDTO convertReportToDTO(Report report) {
-        CitizenDTO citizenDTO = convertCitizenToDTO(report.getCitizen());
-        IssueDTO issueDTO = convertIssueToDTO(report.getIssue());
+        CitizenDTO citizenDTO = convertCitizenToDTO(report.getIdcitizen());
+        IssueDTO issueDTO = convertIssueToDTO(report.getIdissue());
         CoordinatesDTO coordinatesDTO = convertCoordinatesToDTO(report.getCoordinates());
 
         return new ReportDTO(
@@ -87,7 +82,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     private IssueDTO convertIssueToDTO(Issue issue) {
         return new IssueDTO(
                 issue.getId(),
-                issue.getCategory(),
+                issue.getCategoryIssue(),
                 issue.getPriority()
         );
     }
