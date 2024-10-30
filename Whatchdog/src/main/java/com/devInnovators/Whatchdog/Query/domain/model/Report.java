@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.Field;
 
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
@@ -31,7 +32,6 @@ public class Report {
     @DBRef(lazy = true)
     private Issue idissue;
 
-    @DBRef(lazy = true) 
     private Status status;
 
     @DBRef(lazy = true) 
@@ -40,10 +40,10 @@ public class Report {
     private LocalDateTime updateDate;
     private String fotoUrl;
 
-    @DBRef(lazy = true) 
+    @DBRef(lazy = true)
+    @Field("idAdminC") 
     private AdminC idAdminC;
 
-    @DBRef(lazy = true) 
     private CategoryIssue categoryIssue;
     
     @DBRef(lazy = true) 
