@@ -2,6 +2,7 @@ package com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.
 
 import java.util.List;
 
+import com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.Command.domain.model.Issue;
 import com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.Query.aplication.DTO.IssueDTO;
 
 import jakarta.persistence.Entity;
@@ -66,5 +67,9 @@ public class QueryIssue {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public QueryIssue(Issue issue) {
+        //TODO Auto-generated constructor stub
     }
 }

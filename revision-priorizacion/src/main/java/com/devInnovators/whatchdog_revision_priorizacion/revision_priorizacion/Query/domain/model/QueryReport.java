@@ -3,6 +3,7 @@ package com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.
 import java.time.LocalDateTime;
 import java.util.List;
 
+import com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.Command.domain.model.Report;
 import com.devInnovators.whatchdog_revision_priorizacion.revision_priorizacion.Query.aplication.DTO.ReportDTO;
 
 import jakarta.persistence.Embedded;
@@ -94,5 +95,9 @@ public class QueryReport {
     @PreUpdate
     protected void onUpdate() {
         updateDate = LocalDateTime.now();
+    }
+
+    public QueryReport(Report report) {
+        //TODO Auto-generated constructor stub
     }
 }
