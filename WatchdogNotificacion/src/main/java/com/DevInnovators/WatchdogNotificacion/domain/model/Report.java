@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.DevInnovators.WatchdogNotificacion.domain.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -73,10 +73,5 @@ public class Report {
     @PreUpdate
     protected void onUpdate() {
         updateDate = LocalDateTime.now();   // Actualización automática al modificar
-    }
-
-    public Object getProblem() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getProblem'");
     }
 }

@@ -3,6 +3,10 @@ package com.devInnovators.Whatchdog.Query.domain.model;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.persistence.Entity;
+
+import com.devInnovators.Whatchdog.Query.domain.model.Report; // Ensure that the Report class exists in this package or update the package path accordingly
+
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -25,7 +29,5 @@ public class AdminC {
 
     @DBRef(lazy = true)
     private List<Report> assignedReport;// Esta lista debería tener el getter
-
-
 
 }

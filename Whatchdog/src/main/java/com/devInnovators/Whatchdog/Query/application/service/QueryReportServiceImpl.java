@@ -116,7 +116,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
         List<CommentDTO> commentDTOs = convertCommentsToDTOs(report.getComments());
 
         return new ReportDTO(
-            report.getIdReport(),
+            report.getId(),
             report.getDescription(),
             citizenDTO,
             issueDTO,
@@ -188,7 +188,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
     private CommentDTO convertCommentToDTO(Comment comment) {
          CitizenDTO citizenDTO = convertCitizenToDTO(comment.getIdcitizen());
-         String reportId = comment.getIdreport() != null ? comment.getIdreport().getIdReport() : null; // Obtener ID del Report
+         String reportId = comment.getIdreport() != null ? comment.getIdreport().getId() : null; // Obtener ID del Report
         return new CommentDTO(
                 comment.getId(),
                 comment.getDescription(),

@@ -29,7 +29,7 @@ public class Issue {
     private AdminC idAdminC;
    
     private ResolutionTeam resolutionTeam;
-    // operaciones o metodos de dominio
+   
 
 }
 
