@@ -24,16 +24,12 @@ public class Issue {
     private StatusIssue statusIssue;
     private String priority;
     @DBRef(lazy = true) 
-    private List<QueryReport> reportsList;
+    private List<Report> reportsList;
     @DBRef(lazy = true) 
     private AdminC idAdminC;
     @DBRef(lazy = true) 
     private ResolutionTeam resolutionTeam;
     // operaciones o metodos de dominio
-    public String getCategory() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCategory'");
-    }
 
 }
 

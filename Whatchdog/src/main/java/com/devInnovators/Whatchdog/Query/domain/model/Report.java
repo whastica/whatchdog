@@ -20,7 +20,7 @@ import java.util.List;
 @NoArgsConstructor 
 @Document(collection = "report") 
 
-public class QueryReport {
+public class Report {
     @Id
     private String id;
     private String description;
@@ -62,36 +62,6 @@ public class QueryReport {
     @PreUpdate
     public void preUpdate() {
         this.updateDate = LocalDateTime.now();
-    }
-
-    public void setCitizen(com.devInnovators.Whatchdog.Command.domain.model.Citizen citizen) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCitizen'");
-    }
-
-    public void setStatus(com.devInnovators.Whatchdog.Command.domain.model.Status status2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setStatus'");
-    }
-
-    public void setCoordinates(com.devInnovators.Whatchdog.Command.domain.model.Coordinates coordinates2) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setCoordinates'");
-    }
-
-    public void setProblem(Object problem) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'setProblem'");
-    }
-
-    public Citizen getCitizen() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getCitizen'");
-    }
-
-    public Issue getIssue() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'getIssue'");
     }
 
 }

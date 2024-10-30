@@ -17,18 +17,8 @@ import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServi
 import com.devInnovators.Whatchdog.Query.domain.model.Citizen;
 import com.devInnovators.Whatchdog.Query.domain.model.Coordinates;
 import com.devInnovators.Whatchdog.Query.domain.model.Issue;
-<<<<<<< HEAD
 import com.devInnovators.Whatchdog.Query.domain.model.Report;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
-=======
-
-
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
-
-import java.util.List;
-import java.util.stream.Collectors;
->>>>>>> 651bea09dfc4022e613ce502a57159671fbdbfd2
 
 
 
@@ -44,12 +34,12 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
 
     public ReportDTO findReportById(String id) {
-        QueryReport report = reportRepository.findById(id)
+        Report report = reportRepository.findById(id)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found with ID: " + id));
         return convertReportToDTO(report);
     }
     public List<ReportDTO> findAllReports() {
-        List<QueryReport> reports = reportRepository.findAll();
+        List<Report> reports = reportRepository.findAll();
         
         if (reports.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reports found");
@@ -61,15 +51,9 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
 
     // Método privado para la conversión de Report a ReportDTO
-<<<<<<< HEAD
     private ReportDTO convertReportToDTO(Report report) {
         CitizenDTO citizenDTO = convertCitizenToDTO(report.getIdcitizen());
         IssueDTO issueDTO = convertIssueToDTO(report.getIdissue());
-=======
-    private ReportDTO convertReportToDTO(QueryReport report) {
-        CitizenDTO citizenDTO = convertCitizenToDTO(report.getCitizen());
-        IssueDTO issueDTO = convertIssueToDTO(report.getIssue());
->>>>>>> 651bea09dfc4022e613ce502a57159671fbdbfd2
         CoordinatesDTO coordinatesDTO = convertCoordinatesToDTO(report.getCoordinates());
 
         return new ReportDTO(

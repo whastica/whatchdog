@@ -2,7 +2,7 @@ package com.devInnovators.Whatchdog.Query.domain.model;
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
+import com.devInnovators.Whatchdog.Query.domain.model.Report;
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
@@ -23,7 +23,7 @@ public class AdminC {
     
     private String name;
     @DBRef(lazy = true) 
-    private List<QueryReport> assignedReport;
+    private List<Report> assignedReport;
 
 
 }

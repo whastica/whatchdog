@@ -22,6 +22,6 @@ public class Comment {
     private Citizen idcitizen;
     private LocalDateTime createDate;
     @DBRef(lazy = true) 
-    private QueryReport idreport;
+    private Report idreport;
     
 }
