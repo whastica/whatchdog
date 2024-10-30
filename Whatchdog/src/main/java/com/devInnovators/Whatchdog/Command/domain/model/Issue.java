@@ -27,20 +27,21 @@ public class Issue {
     @Enumerated(EnumType.STRING)
     private CategoryIssue categoryIssue;
 
-    @Enumerated(EnumType.STRING)  // Guarda el enum como una cadena en la base de datos
-    private Priority priority;
-
     @Enumerated(EnumType.STRING)
     private StatusIssue statusIssue;
 
-    @Enumerated(EnumType.STRING)
-    private ResolutionTeam resolutionTeam;
+    @Enumerated(EnumType.STRING)  // Guarda el enum como una cadena en la base de datos
+    private Priority priority;
+
 
     @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Report> ReportList;
+    private List<Report> reportList;
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con adminc 
     @JoinColumn(name = "adminc_id")
     private AdminC adminc;
+
+    @Enumerated(EnumType.STRING)
+    private ResolutionTeam resolutionTeam;
 
 }

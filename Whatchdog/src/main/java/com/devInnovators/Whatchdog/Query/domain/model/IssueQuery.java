@@ -1,6 +1,7 @@
 package com.devInnovators.Whatchdog.Query.domain.model;
 
-import java.time.LocalDateTime;
+
+import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -13,15 +14,22 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Document(collection = "comment")
-public class Comment {
+@Document(collection = "issue")        
+public class Issue {
     @Id
     private String id;
-    private String description;
+   
+    private String categoryIssue;
+
+    private StatusIssue statusIssue;
+    private String priority;
     @DBRef(lazy = true) 
-    private Citizen idcitizen;
-    private LocalDateTime createDate;
+    private List<Report> reportsList;
     @DBRef(lazy = true) 
-    private Report idreport;
-    
+    private AdminC adminC;
+   
+    private ResolutionTeam resolutionTeam;
+   
+
 }
+

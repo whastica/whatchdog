@@ -40,7 +40,7 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con adminc 
     @JoinColumn(name = "adminc_id")
-    private AdminC adminc;
+    private AdminC adminC;
 
     @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<Comment> comments;

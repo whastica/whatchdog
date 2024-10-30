@@ -24,6 +24,6 @@ public class AdminC {
     private String name;
 
     @OneToMany(mappedBy = "adminc", fetch = FetchType.LAZY)
-    private List<Report> AsignedReports;
+    private List<Report> asignedReports;
 
 }

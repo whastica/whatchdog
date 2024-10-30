@@ -1,17 +1,15 @@
 package com.devInnovators.Whatchdog.Query.application.DTO;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
-
-
-import com.devInnovators.Whatchdog.Query.domain.model.Status;
-import com.devInnovators.Whatchdog.Query.domain.model.CategoryIssue;
+import com.devInnovators.Whatchdog.Query.domain.model.CategoryIssueQuery;
+import com.devInnovators.Whatchdog.Query.domain.model.CoordinatesQuery;
+import com.devInnovators.Whatchdog.Query.domain.model.StatusQuery;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -20,17 +18,39 @@ public class ReportDTO {
 
     private String id;
     private String description;
-    private CitizenDTO idcitizen;       // Usar CitizenDTO para representar el ciudadano
-    private IssueDTO idissue;           // Usar IssueDTO para representar el issue
-    private Status status;           // Usar StatusDTO para representar el estado
-    private CoordinatesDTO coordinates; // Usar CoordinatesDTO para representar las coordenadas
+    private CitizenDTO idcitizen; 
+    private IssueDTO idissue;          
+    private StatusQuery status;          
+    private CoordinatesDTO coordinates; 
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     private String fotoUrl;
-    private AdminDTO idAdminC;        // Usar AdminCDTO para representar el administrador
-    private CategoryIssue categoryIssue; // Usar CategoryIssueDTO para representar la categoría
-    private List<CommentDTO> comments;  // Lista de CommentDTO para representar los comentarios
+    private AdminDTO idAdminC;       
+    private CategoryIssueQuery categoryIssue; 
+    private List<CommentDTO> comments;  
     private Long numLikes;
     private Long numDislikes;
+
+    // Asegúrate de que este constructor exista
+    public ReportDTO(String id, String description, CitizenDTO citizen, IssueDTO issue,
+                     StatusQuery status, CategoryIssueQuery categoryIssue, 
+                     CoordinatesQuery coordinates, LocalDateTime createDate,
+                     LocalDateTime updateDate, String fotoUrl, AdminDTO admin,
+                     List<CommentDTO> comments, Long numLikes, Long numDislikes) {
+        this.id = id;
+        this.description = description;
+        this.citizen = citizen;
+        this.issue = issue;
+        this.status = status;
+        this.categoryIssue = categoryIssue;
+        this.coordinates = coordinates;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+        this.fotoUrl = fotoUrl;
+        this.admin = admin;
+        this.comments = comments;
+        this.numLikes = numLikes;
+        this.numDislikes = numDislikes;
+    }
 }
 

@@ -115,7 +115,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         // Asigna IDs de entidades relacionadas
         dto.setCitizenId(report.getCitizen() != null ? report.getCitizen().getId() : null);
         dto.setIssueId(report.getIssue() != null ? report.getIssue().getId() : null);
-        dto.setAdmincId(report.getAdminc() != null ? report.getAdminc().getId() : null);
+        dto.setAdmincId(report.getAdminC() != null ? report.getAdminC().getId() : null);
     
         // Convierte lista de comentarios a lista de IDs
         dto.setCommentIds(report.getComments().stream()
