@@ -2,6 +2,7 @@ package com.devInnovators.Whatchdog.Query.domain.repository;
 
 import com.devInnovators.Whatchdog.Query.domain.model.Report;
 
+
 import com.devInnovators.Whatchdog.Query.domain.model.Status;
 
 import org.springframework.data.jpa.repository.Query;

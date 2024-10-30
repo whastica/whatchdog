@@ -1,24 +1,22 @@
 package com.devInnovators.Whatchdog.Query.application.service;
 
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
-import org.springframework.data.mongodb.core.query.Criteria;
+
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+
+
+import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 import com.devInnovators.Whatchdog.Query.application.DTO.AdminDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.CitizenDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.CommentDTO;
-import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.IssueDTO;
-import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
-import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
+import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
 import com.devInnovators.Whatchdog.Query.domain.model.AdminC;
 import com.devInnovators.Whatchdog.Query.domain.model.Citizen;
 import com.devInnovators.Whatchdog.Query.domain.model.Comment;
@@ -28,9 +26,10 @@ import com.devInnovators.Whatchdog.Query.domain.model.Report;
 import com.devInnovators.Whatchdog.Query.domain.model.Status;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 
-import lombok.extern.java.Log;
 
-import org.springframework.data.mongodb.core.query.Query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class QueryReportServiceImpl implements QueryReportServiceInterface {
@@ -42,9 +41,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     public QueryReportServiceImpl(QueryReportRepository reportRepository) {
         this.reportRepository = reportRepository;
     }
-    @Autowired
-    private MongoTemplate mongoTemplate;
-
+    
     public ReportDTO findReportById(String idReport) {
         Report report = reportRepository.findById(idReport)
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found with ID: " + idReport));
