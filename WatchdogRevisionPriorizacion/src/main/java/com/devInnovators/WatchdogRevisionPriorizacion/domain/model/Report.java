@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.domain.model;
+package com.devInnovators.WatchdogRevisionPriorizacion.domain.model;
 
 import java.time.LocalDateTime;
 import java.util.List;
