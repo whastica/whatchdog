@@ -34,7 +34,7 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
     @Transactional
     public IssueDTO createIssue(IssueDTO issueDTO) {
         Issue issue = new Issue();
-        issue.setCategoryIssue(issueDTO.getCategory());
+        issue.setId(issueDTO.getId());  // Asignar el id proporcionado en el DTO
         issue.setCategoryIssue(issueDTO.getCategory());
         issue.setStatusIssue(StatusIssue.ASIGNADO); // Estado inicial
         issue.setPriority(issueDTO.getPriority());
