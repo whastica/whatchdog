@@ -1,4 +1,5 @@
 package com.devInnovators.Whatchdog.Command.infra;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -7,7 +8,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.devInnovators.Whatchdog.Command.aplicattion.DTO.CommentDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.interfaces.CommandReportServiceInterface;
 
@@ -23,20 +26,35 @@ public class CommandReportController {
 
     @PostMapping
     public ResponseEntity<ReportDTO> createReport(@RequestBody ReportDTO reportDTO) {
+        // Aquí puedes verificar si el idReport no es nulo
+        if (reportDTO.getIdReport() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
+        }
+
         ReportDTO createdReport = reportService.createReport(reportDTO);
         return ResponseEntity.status(201).body(createdReport); // 201 Created
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<ReportDTO> updateReport(@PathVariable String id, @RequestBody ReportDTO reportDTO) {
-        ReportDTO updatedReport = reportService.updateReport(id, reportDTO);
+    @PutMapping("/{idReport}")
+    public ResponseEntity<ReportDTO> updateReport(@PathVariable String idReport, @RequestBody ReportDTO reportDTO) {
+        ReportDTO updatedReport = reportService.updateReport(idReport, reportDTO);
         return ResponseEntity.ok(updatedReport); // 200 OK
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReport(@PathVariable String id) {
-        reportService.deleteReport(id);
+    @DeleteMapping("/{idReport}")
+    public ResponseEntity<Void> deleteReport(@PathVariable String idReport) {
+        reportService.deleteReport(idReport);
         return ResponseEntity.noContent().build(); // 204 No Content
+    }
+    @PostMapping("/{idReport}/comments")
+    public ResponseEntity<CommentDTO> createCommentToReport( @RequestBody CommentDTO commentDTO, @PathVariable String idReport) {
+        CommentDTO createdComment = reportService.createCommentToReport(commentDTO, idReport);
+        return ResponseEntity.status(201).body(createdComment); // 201 Created
+    }
+    @PutMapping("/{idReport}/comments/{idComment}")
+    public ResponseEntity<Void> addCommentToReport(@PathVariable String idReport, @PathVariable String idComment) {
+        reportService.addCommentToReport(idReport, idComment);
+        return ResponseEntity.ok().build(); // 200 OK
     }
 
 }

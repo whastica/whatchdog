@@ -10,15 +10,15 @@ import com.devInnovators.Whatchdog.Sync.serviceSync.SyncService;
 
 @RestController
 public class SyncController {
-/* 
+
     @Autowired
     private SyncService syncService;
 
     // Endpoint para sincronizar un solo reporte por su ID
-    @PostMapping("/sync/report/{id}")
-    public ResponseEntity<String> syncReportById(@PathVariable String id) {
-        syncService.syncReportById(id);
-        return ResponseEntity.ok("Report " + id + " synchronized successfully");
+    @PostMapping("/sync/report/{idReport}")
+    public ResponseEntity<String> syncReportById(@PathVariable String idReport) {
+        syncService.syncReportById(idReport);
+        return ResponseEntity.ok("Report " + idReport + " synchronized successfully");
     }
 
     // Endpoint para sincronizar todos los reportes
@@ -26,5 +26,5 @@ public class SyncController {
     public ResponseEntity<String> syncAllReports() {
         syncService.syncAllReports();
         return ResponseEntity.ok("All reports synchronized successfully");
-    } */
+    } 
 }

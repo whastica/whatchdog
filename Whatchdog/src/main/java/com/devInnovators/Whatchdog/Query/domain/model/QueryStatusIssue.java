@@ -1,5 +1,5 @@
 package com.devInnovators.Whatchdog.Query.domain.model;
 
-public enum StatusIssue {
+public enum QueryStatusIssue {
     ASIGNADO, EN_PROCESO, RESUELTO;
 }

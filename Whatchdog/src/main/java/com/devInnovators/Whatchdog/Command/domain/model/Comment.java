@@ -23,10 +23,10 @@ public class Comment {
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con Citizen
     @JoinColumn(name = "citizen_id")
-    private Citizen citizen;
+    private Citizen citizenId;
 
     
-    @ManyToOne(fetch = FetchType.LAZY)  // Asociación con report
+    @ManyToOne  
     @JoinColumn(name = "report_id")
     private Report report;
 

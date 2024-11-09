@@ -7,6 +7,7 @@ import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.PreUpdate;
@@ -21,33 +22,36 @@ import java.util.List;
 @NoArgsConstructor 
 @Document(collection = "report") 
 
-public class Report {
+public class QueryReport {
     @Id
-    private String id;
+    private String idReport;
     private String description;
    
-    @DBRef(lazy = true)   
-    private Citizen idcitizen;
+       
+    private String idcitizen;
     
-    @DBRef(lazy = true)
-    private Issue idissue;
+    //@DBRef(lazy = false)
+    private String idissue;
+    private String idAdminC;
+    
+    @DBRef(lazy = false) 
+    private List<QueryComment> comments;
 
-    private Status status;
+    private QueryStatus status;
+    
+    private String categoryIssue;
 
-    @DBRef(lazy = true) 
-    private Coordinates coordinates;
+    @Embedded
+    private QueryCoordinates coordinates;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;
     private String fotoUrl;
 
-    @DBRef(lazy = true)
-    @Field("idAdminC") 
-    private AdminC idAdminC;
+  /*   @DBRef(lazy = false)
+    @Field("idAdminC")  */
+   
 
-    private CategoryIssue categoryIssue;
     
-    @DBRef(lazy = true) 
-    private List<Comment> comments;
     private Long numLikes;
     private Long numDislikes;
 

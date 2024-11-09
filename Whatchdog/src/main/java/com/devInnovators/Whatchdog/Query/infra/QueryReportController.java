@@ -3,7 +3,7 @@ package com.devInnovators.Whatchdog.Query.infra;
 
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 
-import com.devInnovators.Whatchdog.Query.domain.model.Status;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 
 
 import java.util.List;
@@ -27,9 +27,9 @@ public class QueryReportController {
         this.reportService = reportService;
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<ReportDTO> getReporteById(@PathVariable String id) {
-        ReportDTO reporte = reportService.findReportById(id); // Si no se encuentra, lanzará una excepción
+    @GetMapping("/{idReport}")
+    public ResponseEntity<ReportDTO> getReporteById(@PathVariable String idReport) {
+        ReportDTO reporte = reportService.findByIdReport(idReport); // Si no se encuentra, lanzará una excepción
         return ResponseEntity.ok(reporte); // Retorna 200 OK con el reporte
     }
     @GetMapping
@@ -39,7 +39,7 @@ public class QueryReportController {
     }
     
     @GetMapping("/status/{status}")
-    public ResponseEntity<List<ReportDTO>> getReportesByStatus(@PathVariable Status status) {
+    public ResponseEntity<List<ReportDTO>> getReportesByStatus(@PathVariable QueryStatus status) {
         List<ReportDTO> reportes = reportService.findReportsByStatus(status);
         return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
     }

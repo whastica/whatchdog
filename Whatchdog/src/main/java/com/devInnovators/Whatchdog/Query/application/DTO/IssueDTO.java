@@ -1,7 +1,9 @@
 package com.devInnovators.Whatchdog.Query.application.DTO;
 
-import com.devInnovators.Whatchdog.Query.domain.model.StatusIssue;
-import com.devInnovators.Whatchdog.Query.domain.model.ResolutionTeam;    
+import com.devInnovators.Whatchdog.Query.domain.model.QueryStatusIssue;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryCategoryIssue;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryResolutionTeam;   
+import com.devInnovators.Whatchdog.Query.domain.model.QueryPriority; 
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -16,10 +18,11 @@ import java.util.List;
 public class IssueDTO {
 
     private String id;
-    private String categoryIssue;
-    private StatusIssue statusIssue;  
-    private String priority;
-    private List<ReportDTO> reportsList; 
+    private QueryCategoryIssue categoryIssue;
+    private QueryPriority priority;
+    private QueryStatusIssue statusIssue;  
+    private QueryResolutionTeam resolutionTeam; 
+    private List<String> reportsList; 
     private AdminDTO idAdminC;            
-    private ResolutionTeam resolutionTeam; 
+    
 }

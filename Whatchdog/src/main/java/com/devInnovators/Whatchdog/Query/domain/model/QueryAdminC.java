@@ -1,27 +1,29 @@
 package com.devInnovators.Whatchdog.Query.domain.model;
 
-import java.time.LocalDateTime;
-
 import org.springframework.data.mongodb.core.mapping.DBRef;
 import org.springframework.data.mongodb.core.mapping.Document;
+
 
 import jakarta.persistence.Id;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
-@Document(collection = "comment")
-public class Comment {
-    @Id
-    private String id;
-    private String description;
-    @DBRef(lazy = true) 
-    private Citizen idcitizen;
-    private LocalDateTime createDate;
-    @DBRef(lazy = true) 
-    private Report idreport;
+@NoArgsConstructor  // Genera un constructor sin argumentos
+@Document(collection = "adminC") 
+public class QueryAdminC {
     
+    @Id // Indica que este campo es la clave primaria en MongoDB
+    private String id;
+    
+    private String name;
+
+    @DBRef(lazy = true)
+    private List<QueryReport> assignedReport;// Esta lista debería tener el getter
+
 }

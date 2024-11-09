@@ -1,6 +1,7 @@
 package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
@@ -16,12 +17,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReportDTO {
 
-    private String id;
+    private String idReport;
     private String description;
-    private String citizenId;                // ID de Citizen
-    private String issueId;                  // ID de Issue
-    private String admincId;                 // ID de AdminC
-    private List<String> commentIds;         // Lista de IDs de los comentarios
+    private String idCitizen;                // ID de Citizen
+    private String idissue;                  // ID de Issue
+    private String idAdminC;  
+    private List<CommentDTO> comment = new ArrayList<>();           // Lista de IDs de los comentarios
     private Status status;
     private CategoryIssue categoryIssue;
     private Coordinates coordinates;

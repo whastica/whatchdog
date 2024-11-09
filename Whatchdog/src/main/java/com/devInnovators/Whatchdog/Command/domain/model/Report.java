@@ -1,6 +1,7 @@
 package com.devInnovators.Whatchdog.Command.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.persistence.CascadeType;
@@ -26,7 +27,7 @@ import lombok.NoArgsConstructor;
 public class Report {
 
     @Id
-    private String id;
+    private String idReport;
 
     private String description;
 
@@ -42,8 +43,8 @@ public class Report {
     @JoinColumn(name = "adminc_id")
     private AdminC adminc;
 
-    @OneToMany(mappedBy = "report", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
-    private List<Comment> comments;
+    @OneToMany(mappedBy = "report", fetch = FetchType.EAGER)
+    private List<Comment> comments = new ArrayList<>();
 
     @Enumerated(EnumType.STRING)  // Mapeo del enum Status como String en la BD
     private Status status;

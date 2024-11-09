@@ -1,6 +1,6 @@
 package com.devInnovators.Whatchdog.Query.domain.model;
 
-public enum CategoryIssue {
+public enum QueryCategoryIssue {
     INFRAESTRUCTURA_VIAL,
     ILUMINACION_PUBLICA,
     GESTION_RESIDUOS,
