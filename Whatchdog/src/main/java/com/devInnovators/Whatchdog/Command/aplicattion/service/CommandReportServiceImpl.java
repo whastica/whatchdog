@@ -2,12 +2,14 @@ package com.devInnovators.Whatchdog.Command.aplicattion.service;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
+import com.devInnovators.Whatchdog.Command.aplicattion.DTO.CommentDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.interfaces.CommandReportServiceInterface;
 import com.devInnovators.Whatchdog.Command.domain.model.AdminC;
@@ -23,7 +25,6 @@ import com.devInnovators.Whatchdog.Command.domain.repository.CommandIssueReposit
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandReportRepository;
 import com.devInnovators.Whatchdog.Command.exception.ResourceNotFoundException;
 import com.devInnovators.Whatchdog.Sync.serviceSync.SyncService;
-import com.devInnovators.Whatchdog.Command.aplicattion.DTO.CommentDTO;
 
 @Service
 public class CommandReportServiceImpl implements CommandReportServiceInterface {
@@ -49,54 +50,75 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     // Método para crear un nuevo reporte
     @Override
     public ReportDTO createReport(ReportDTO reportDTO) {
-        // Cargar las entidades de Citizen y Problem
-        Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
-            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
-        Issue issue = issueRepository.findById(reportDTO.getIdissue())
-            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
 
-        AdminC adminc = adminCRepository.findById(reportDTO.getIdAdminC())
-            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdAdminC()));
-            
-        // Convertir DTO a entidad
+        if (reportDTO.getIdReport() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
+        }
+
+        // Imprimir el idReport para asegurarse de que se está recibiendo correctamente
+        System.out.println("Received idReport: " + reportDTO.getIdReport());
+        // Crear la entidad Report y mapear los valores del DTO
         Report report = new Report();
+
         report.setIdReport(reportDTO.getIdReport());
         report.setDescription(reportDTO.getDescription());
-        report.setCitizen(citizen);  // Establecer la entidad Citizen
-        report.setIssue(issue);  
-        report.setAdminC(adminc); 
+
+        // Cargar el Citizen si el ID es válido, o lanzar excepción si no se encuentra
+        System.out.println("idCitizen: " + reportDTO.getIdCitizen());
+        Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
+            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
+        report.setCitizen(citizen);
+
+        // Cargar Issue solo si el idissue no es null
+        if (reportDTO.getIdissue() != null) {
+            Issue issue = issueRepository.findById(reportDTO.getIdissue())
+                .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
+            report.setIssue(issue);
+        } else {
+            report.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
+        }
+
+        // Cargar AdminC si está presente en el DTO, de lo contrario dejar como null
+        System.out.println("idAdminC: " + reportDTO.getIdAdminC());
+        if (reportDTO.getIdAdminC() != null) {
+            AdminC adminC = adminCRepository.findById(reportDTO.getIdAdminC())
+                .orElseThrow(() -> new ResourceNotFoundException("AdminC no encontrado con id: " + reportDTO.getIdAdminC()));
+            report.setAdminC(adminC);
+        } else {
+            report.setAdminC(null);  // Permitir que adminC sea null si no se proporciona
+        }
+
+        // Configurar el estado y la categoría de problemas
         report.setStatus(reportDTO.getStatus());
         report.setCategoryIssue(reportDTO.getCategoryIssue());
-        report.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
-        report.setCreateDate(LocalDateTime.now()); // Establecer la fecha de creación
-        report.setUpdateDate(LocalDateTime.now()); // Establecer la fecha de actualización
+
+        // Configurar coordenadas si están presentes en el DTO
+        if (reportDTO.getCoordinates() != null) {
+            report.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
+        }
+
+        // Configurar fechas, foto y conteo de likes y dislikes
+        report.setCreateDate(LocalDateTime.now()); // Fecha de creación actual
+        report.setUpdateDate(LocalDateTime.now()); // Fecha de actualización actual
         report.setFotoUrl(reportDTO.getFotoUrl());
         report.setNumLikes(reportDTO.getNumLikes());
         report.setNumDislikes(reportDTO.getNumDislikes());
 
-        if (reportDTO.getComment() != null && !reportDTO.getComment().isEmpty()) {
-            List<Comment> comments = new ArrayList<>();
-            for (CommentDTO commentDTO : reportDTO.getComment()) {
-                Comment comment = new Comment();
-                comment.setId(commentDTO.getId());
-                comment.setDescription(commentDTO.getDescription());
-                comment.setCitizenId(citizen);
-                comment.setReport(report);  // Asociamos el comentario con el reporte
-                comment.setCreateDate(commentDTO.getCreateDate()); // Fecha de creación del comentario
-                comments.add(comment);
-            }
-            report.setComments(comments);  // Asociamos los comentarios al reporte
-        }
+        // No asignar comentarios en el momento de la creación del reporte
+        report.setComments(new ArrayList<>()); // No asignar comentarios si el reporte es recién creado
+
         // Guardar el reporte en la base de datos
         Report savedReport = reportRepository.save(report);
-        try {
-    syncService.syncAllReports();
-} catch (Exception e) {
-    // Manejar el error o registrar detalles de la excepción
-    System.err.println("Error durante la sincronización: " + e.getMessage());
-}
 
-        // Convertir entidad de vuelta a DTO
+        // Intentar sincronización y manejar excepciones
+        try {
+            syncService.syncAllReports();
+        } catch (Exception e) {
+            // Manejar el error o registrar detalles de la excepción
+            System.err.println("Error durante la sincronización: " + e.getMessage());
+        }
+
+        // Convertir la entidad guardada a DTO y retornarla
         return convertToDTO(savedReport);
     }
 

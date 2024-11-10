@@ -26,13 +26,16 @@ public class CommandReportController {
 
     @PostMapping
     public ResponseEntity<ReportDTO> createReport(@RequestBody ReportDTO reportDTO) {
-        // Aquí puedes verificar si el idReport no es nulo
+        // Verificar que el idReport no sea nulo
         if (reportDTO.getIdReport() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
         }
 
+        // Crear el reporte utilizando el servicio
         ReportDTO createdReport = reportService.createReport(reportDTO);
-        return ResponseEntity.status(201).body(createdReport); // 201 Created
+
+        // Retornar la respuesta con el reporte creado
+        return ResponseEntity.status(201).body(createdReport);  // 201 Created
     }
 
     @PutMapping("/{idReport}")

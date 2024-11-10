@@ -4,7 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -27,6 +27,7 @@ import lombok.NoArgsConstructor;
 public class Report {
 
     @Id
+    @Column(name = "id_report")
     private String idReport;
 
     private String description;
