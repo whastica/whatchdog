@@ -90,7 +90,7 @@ public class SyncService {
         queryReport.setDescription(commandReport.getDescription());
         queryReport.setIdcitizen(commandReport.getCitizen().getId()); // Conversión de Citizen
         queryReport.setIdissue(commandReport.getIssue().getId()); // Conversión de Issue
-        queryReport.setIdAdminC(commandReport.getAdminc().getId());
+        queryReport.setIdAdminC(commandReport.getAdminC().getId());
         queryReport.setComments(convertToQueryCommentsList(commandReport.getComments()));
         queryReport.setStatus(convertToQueryStatus(commandReport.getStatus())); // Conversión de Status
         queryReport.setCategoryIssue(commandReport.getCategoryIssue().name());

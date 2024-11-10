@@ -1,8 +1,7 @@
 package com.devInnovators.Whatchdog.Query.application.DTO;
 
 import java.time.LocalDateTime;
-
-
+import java.util.List;
 
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryCategoryIssue;
@@ -11,8 +10,6 @@ import com.devInnovators.Whatchdog.Query.domain.model.QueryCoordinates;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -33,5 +30,7 @@ public class ReportDTO {
     private String fotoUrl;
     private Long numLikes;
     private Long numDislikes;
+
+    
 }
 

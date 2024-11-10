@@ -41,7 +41,7 @@ public class Report {
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con adminc 
     @JoinColumn(name = "adminc_id")
-    private AdminC adminc;
+    private AdminC adminC;
 
     @OneToMany(mappedBy = "report", fetch = FetchType.EAGER)
     private List<Comment> comments = new ArrayList<>();
@@ -76,8 +76,8 @@ public class Report {
         updateDate = LocalDateTime.now();   // Actualización automática al modificar
     }
 
-    public Object getProblem() {
+    /*public Object getProblem() {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'getProblem'");
-    }
+    }*/
 }

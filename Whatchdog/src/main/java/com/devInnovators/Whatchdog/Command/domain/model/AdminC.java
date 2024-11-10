@@ -23,7 +23,7 @@ public class AdminC {
     @NotNull
     private String name;
 
-    @OneToMany(mappedBy = "adminc", fetch = FetchType.LAZY)
-    private List<Report> AsignedReports;
+    @OneToMany(mappedBy = "adminC", fetch = FetchType.LAZY)
+    private List<Report> asignedReports;
 
 }

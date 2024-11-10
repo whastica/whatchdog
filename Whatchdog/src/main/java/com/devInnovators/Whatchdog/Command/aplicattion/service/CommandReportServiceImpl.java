@@ -64,7 +64,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         report.setDescription(reportDTO.getDescription());
         report.setCitizen(citizen);  // Establecer la entidad Citizen
         report.setIssue(issue);  
-        report.setAdminc(adminc); 
+        report.setAdminC(adminc); 
         report.setStatus(reportDTO.getStatus());
         report.setCategoryIssue(reportDTO.getCategoryIssue());
         report.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
@@ -150,7 +150,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         dto.setDescription(report.getDescription());
         dto.setIdCitizen(report.getCitizen() != null ? report.getCitizen().getId() : null);
         dto.setIdissue(report.getIssue() != null ? report.getIssue().getId() : null);
-        dto.setIdAdminC(report.getAdminc() != null ? report.getAdminc().getId() : null);
+        dto.setIdAdminC(report.getAdminC() != null ? report.getAdminC().getId() : null);
         dto.setStatus(report.getStatus());
         dto.setCategoryIssue(report.getCategoryIssue());
         dto.setCoordinates(report.getCoordinates());

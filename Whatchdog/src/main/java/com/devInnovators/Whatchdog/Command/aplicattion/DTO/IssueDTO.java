@@ -3,6 +3,7 @@ package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
 
 import java.util.List;
 
+import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
 import com.devInnovators.Whatchdog.Command.domain.model.Priority;
 import com.devInnovators.Whatchdog.Command.domain.model.ResolutionTeam;
 import com.devInnovators.Whatchdog.Command.domain.model.StatusIssue;
@@ -18,7 +19,7 @@ import lombok.NoArgsConstructor;
 public class IssueDTO {
     
     private String id;
-    private CategoryIssue category;
+    private String category;
     private Priority priority;
     private StatusIssue statusIssue;
     private ResolutionTeam resolutionTeam;

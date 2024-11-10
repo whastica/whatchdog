@@ -2,10 +2,9 @@ package com.devInnovators.Whatchdog.Query.application.interfaces;
 
 
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
+import java.util.List;
 
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
-
-import java.util.List;
 
 public interface QueryReportServiceInterface {
 
