@@ -5,17 +5,18 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RestTemplate;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.IssueDTO;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.ReportDTO;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.interfaces.RevisionPriorizacionServiceInterface;
-import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.CategoryIssue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Issue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Priority;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Report;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.StatusIssue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.repository.IssueRepository;
+import com.devInnovators.WatchdogRevisionPriorizacion.domain.repository.ReportRepository;
+import com.devInnovators.WatchdogRevisionPriorizacion.infra.publisher.EventPublisher;
 
 import jakarta.transaction.Transactional;
 
@@ -23,11 +24,12 @@ import jakarta.transaction.Transactional;
 public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServiceInterface {
 
     private final IssueRepository issueRepository;
-    private final RestTemplate restTemplate;
+    private final ReportRepository reportRepository;
+    private EventPublisher eventPublisher;
 
-    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, RestTemplate restTemplate) {
+    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, ReportRepository reportRepository) {
         this.issueRepository = issueRepository;
-        this.restTemplate = restTemplate;
+        this.reportRepository = reportRepository;
     }
 
     @Override
@@ -71,7 +73,7 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
             .collect(Collectors.toList());
     }
 
-    @Override
+    /*@Override
     public List<ReportDTO> getReportsByCategoryFromReportService(CategoryIssue category) {
         // URL del endpoint del microservicio de reportes que permite obtener reportes por categoría
         String url = "http://microservicio-reportes/api/v1/reports?category=" + category;
@@ -80,8 +82,48 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
         ReportDTO[] reports = restTemplate.getForObject(url, ReportDTO[].class);
 
         return reports != null ? List.of(reports) : List.of();
-    }
+    }*/
 
+    @Override
+    public void processUpdateReport(UpdateReportEvent event) {
+        // Obtener el reporte usando su ID
+        Report report = reportRepository.findById(event.getId())
+            .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado con ID: " + event.getId()));
+
+        // Actualizar los campos del reporte con los valores del evento
+        report.setDescription(event.getDescription());
+        report.setStatus(event.getStatus()); // Actualizar el estado
+        report.setCategoryIssue(event.getCategoryIssue()); // Actualizar la categoría
+        report.setCoordinates(event.getCoordinates()); // Actualizar las coordenadas
+        report.setUpdateDate(event.getUpdateDate()); // Actualizar la fecha de actualización
+        report.setFotoUrl(event.getFotoUrl()); // Actualizar la URL de la foto
+
+        // Si el evento tiene un nuevo 'issueId', actualizar también la relación con el Issue
+        if (event.getIssueId() != null) {
+            Issue issue = issueRepository.findById(event.getIssueId())
+                .orElseThrow(() -> new IllegalArgumentException("Issue no encontrado con ID: " + event.getIssueId()));
+            report.setIssue(issue); // Establecer la relación con el issue
+        }
+
+        // Guardar el reporte actualizado
+        reportRepository.save(report);
+
+        // 5. Disparar el evento de actualización
+        UpdateReportEvent updatedReportEvent = new UpdateReportEvent(
+            report.getId(),
+            report.getDescription(),
+            report.getAdminC() != null ? report.getAdminC().getId() : null,  // Aquí agregamos admincId
+            report.getStatus(),
+            report.getCategoryIssue(),
+            report.getIssue() != null ? report.getIssue().getId() : null,
+            report.getCoordinates(),
+            report.getUpdateDate(),
+            report.getFotoUrl()
+        );
+
+        // Publicar el evento
+        eventPublisher.publishUpdateReportEvent(updatedReportEvent);
+    }
     @Override
     public List<ReportDTO> prioritizeReports(List<ReportDTO> reports, Priority priority) {
         // Lógica para ordenar los reportes de acuerdo con el criterio de prioridad
