@@ -1,12 +1,14 @@
 package com.devInnovators.WatchdogRevisionPriorizacion.infra.publisher;
 
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.stereotype.Component;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.CreateIssueEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.RevisedReportEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.infra.config.RabbitMQConfig;
 
+@Component
 public class EventPublisher {
     private final RabbitTemplate rabbitTemplate;
 

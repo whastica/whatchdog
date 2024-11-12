@@ -1,5 +1,7 @@
 package com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO;
 
+
+import java.io.Serializable;
 import java.util.List;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.CategoryIssue;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateIssueEvent {
+public class CreateIssueEvent implements Serializable {
     private String id;                          
     private CategoryIssue category;             
     private Priority priority;                  

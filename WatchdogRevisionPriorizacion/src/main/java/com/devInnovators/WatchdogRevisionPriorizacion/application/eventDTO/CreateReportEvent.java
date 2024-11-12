@@ -1,5 +1,6 @@
 package com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO;
 
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.CategoryIssue;
@@ -13,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class CreateReportEvent {
+public class CreateReportEvent implements Serializable {
     private String id;                       // ID del reporte creado
     private String description;              // Descripción del reporte
     private String citizenId;                // ID del ciudadano que creó el reporte
