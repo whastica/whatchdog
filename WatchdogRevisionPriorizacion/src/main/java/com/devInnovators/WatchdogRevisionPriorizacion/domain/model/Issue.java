@@ -34,7 +34,7 @@ public class Issue {
     private Priority priority;
 
 
-    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "issue", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.EAGER)
     private List<Report> reportList;
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con adminc 

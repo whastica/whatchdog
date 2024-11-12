@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.IssueDTO;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.ReportDTO;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.interfaces.RevisionPriorizacionServiceInterface;
-import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.CategoryIssue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Priority;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.StatusIssue;
 
@@ -26,6 +26,7 @@ public class RevisionPriorizacionController {
 
     private final RevisionPriorizacionServiceInterface revisionPriorizacionService;
 
+    // Constructor
     public RevisionPriorizacionController(RevisionPriorizacionServiceInterface revisionPriorizacionService) {
         this.revisionPriorizacionService = revisionPriorizacionService;
     }
@@ -51,17 +52,32 @@ public class RevisionPriorizacionController {
         return ResponseEntity.ok(issues);
     }
 
-    // Obtener reportes por categoría desde el servicio de reportes
-    @GetMapping("/reports")
-    public ResponseEntity<List<ReportDTO>> getReportsByCategory(@RequestParam CategoryIssue category) {
-        List<ReportDTO> reports = revisionPriorizacionService.getReportsByCategoryFromReportService(category);
-        return ResponseEntity.ok(reports);
-    }
-
     // Priorizar reportes
     @PostMapping("/reports/prioritize")
     public ResponseEntity<List<ReportDTO>> prioritizeReports(@RequestBody List<ReportDTO> reports, @RequestParam Priority priority) {
         List<ReportDTO> prioritizedReports = revisionPriorizacionService.prioritizeReports(reports, priority);
         return ResponseEntity.ok(prioritizedReports);
+    }
+
+    // Actualizar un reporte y disparar el evento de actualización
+    @PutMapping("/reports/{reportId}")
+    public ResponseEntity<Void> updateReport(@PathVariable String reportId, @RequestBody UpdateReportEvent updateReportEvent) {
+        // Crear el evento para la actualización del reporte
+        UpdateReportEvent event = new UpdateReportEvent(
+            reportId,                              // id
+            updateReportEvent.getDescription(),    // description
+            updateReportEvent.getAdmincId(),       // admincId
+            updateReportEvent.getStatus(),         // status
+            updateReportEvent.getCategoryIssue(),  // categoryIssue
+            updateReportEvent.getIssueId(),        // issueId
+            updateReportEvent.getCoordinates(),    // coordinates
+            updateReportEvent.getUpdateDate(),     // updateDate
+            updateReportEvent.getFotoUrl()         // fotoUrl
+        );
+
+        // Llamar al método del servicio para procesar la actualización y publicar el evento
+        revisionPriorizacionService.processUpdateReport(event);
+
+        return ResponseEntity.ok().build(); // Responder correctamente después de procesar el evento
     }
 }
