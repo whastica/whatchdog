@@ -8,29 +8,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.devInnovators.Whatchdog.Command.domain.model.AdminC;
-import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
 import com.devInnovators.Whatchdog.Command.domain.model.Citizen;
 import com.devInnovators.Whatchdog.Command.domain.model.Comment;
 import com.devInnovators.Whatchdog.Command.domain.model.Coordinates;
-import com.devInnovators.Whatchdog.Command.domain.model.Issue;
-import com.devInnovators.Whatchdog.Command.domain.model.Priority;
 import com.devInnovators.Whatchdog.Command.domain.model.Report;
-import com.devInnovators.Whatchdog.Command.domain.model.ResolutionTeam;
 import com.devInnovators.Whatchdog.Command.domain.model.Status;
-import com.devInnovators.Whatchdog.Command.domain.model.StatusIssue;
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandReportRepository;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryAdminC;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryCategoryIssue;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryCitizen;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryComment;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryCoordinates;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryIssue;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryPriority;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryResolutionTeam;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryStatusIssue;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 
 import jakarta.transaction.Transactional;
@@ -65,10 +53,32 @@ public class SyncService {
         // Obtener todos los reportes de la base de datos de comandos
         List<Report> commandReports = commandReportRepository.findAll();
 
-        // Convertir y guardar cada reporte en MongoDB
+            // Convertir y guardar cada reporte en MongoDB
         for (Report commandReport : commandReports) {
+            // Convertir el reporte de la base de datos de comandos a un reporte de consulta
             QueryReport queryReport = convertToQueryReport(commandReport);
-            queryReportRepository.save(queryReport);
+
+            // Verificar si el reporte ya existe en MongoDB antes de guardar
+            if (queryReportRepository.existsByIdReport(queryReport.getIdReport())) {
+                // Si el reporte ya existe, obtener el reporte existente de MongoDB
+                QueryReport existingQueryReport = queryReportRepository.findByIdReport(queryReport.getIdReport());
+
+                // Actualizar los campos del reporte con los valores del nuevo reporte
+                existingQueryReport.setDescription(queryReport.getDescription());
+                existingQueryReport.setIdcitizen(queryReport.getIdcitizen());
+                existingQueryReport.setIdissue(queryReport.getIdissue());
+                existingQueryReport.setStatus(queryReport.getStatus());
+                existingQueryReport.setCoordinates(queryReport.getCoordinates());
+                existingQueryReport.setUpdateDate(queryReport.getUpdateDate());
+                existingQueryReport.setFotoUrl(queryReport.getFotoUrl());
+
+                // Guardar la actualización en MongoDB
+                queryReportRepository.save(existingQueryReport);
+            } else {
+                // Si el reporte no existe, insertar un nuevo documento
+                queryReportRepository.save(queryReport);
+            }
+            
         }
     }
 
@@ -89,7 +99,12 @@ public class SyncService {
         queryReport.setIdReport(commandReport.getIdReport());
         queryReport.setDescription(commandReport.getDescription());
         queryReport.setIdcitizen(commandReport.getCitizen().getId()); // Conversión de Citizen
-        queryReport.setIdissue(commandReport.getIssue().getId()); // Conversión de Issue
+         // Verificación si Issue es null antes de asignarlo
+        if (commandReport.getIssue() != null) {
+            queryReport.setIdissue(commandReport.getIssue().getId()); // Conversión de Issue
+        } else {
+            queryReport.setIdissue(null);  // Asignar null si Issue es null
+        }
         queryReport.setIdAdminC(commandReport.getAdminC().getId());
         queryReport.setComments(convertToQueryCommentsList(commandReport.getComments()));
         queryReport.setStatus(convertToQueryStatus(commandReport.getStatus())); // Conversión de Status

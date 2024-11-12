@@ -52,10 +52,10 @@ public class QueryReportController {
         return ResponseEntity.ok(reportes); // Retorna 200 OK con la lista de reportes
     }
 
-    @GetMapping("/admin/{adminId}")
-    public ResponseEntity<List<ReportDTO>> getReportesByAdminId(@PathVariable String adminId) {
+    @GetMapping("/admin/{idAdminC}")
+    public ResponseEntity<List<ReportDTO>> getReportesByAdminId(@PathVariable String idAdminC) {
         // Obtiene los reportes usando el servicio
-        List<ReportDTO> reportes = reportService.getReportsByAdminId(adminId);
+        List<ReportDTO> reportes = reportService.getReportsByAdminId(idAdminC);
         
         // Retorna 200 OK con la lista de reportes
         return ResponseEntity.ok(reportes);

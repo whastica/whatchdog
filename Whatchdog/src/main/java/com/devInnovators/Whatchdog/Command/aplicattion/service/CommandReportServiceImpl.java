@@ -125,6 +125,11 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     // Método para actualizar un reporte existente
     @Override
     public ReportDTO updateReport(String idReport, ReportDTO reportDTO) {
+        
+        if (reportDTO.getIdReport() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
+        }
+        System.out.println("Received idReport: " + idReport);
         // Buscar el reporte existente
         Report existingReport = reportRepository.findById(idReport)
             .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + idReport));
@@ -132,13 +137,20 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         // Cargar las entidades de Citizen y Problem
         Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
             .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
-        Issue issue = issueRepository.findById(reportDTO.getIdissue())
-            .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
-
+            
         // Actualizar los campos del reporte
+       
         existingReport.setDescription(reportDTO.getDescription());
         existingReport.setCitizen(citizen);  // Establecer la entidad Citizen
-        existingReport.setIssue(issue);    // Establecer la entidad Problem
+       
+        // Cargar Issue solo si el idissue no es null
+        if (reportDTO.getIdissue() != null) {
+            Issue issue = issueRepository.findById(reportDTO.getIdissue())
+                .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
+            existingReport.setIssue(issue);
+        } else {
+            existingReport.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
+        }
         existingReport.setStatus(reportDTO.getStatus());
         existingReport.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
         existingReport.setUpdateDate(LocalDateTime.now()); // Actualizar la fecha de actualización
@@ -147,7 +159,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         // Guardar el reporte actualizado en la base de datos
         Report updatedReport = reportRepository.save(existingReport);
 
-        syncService.syncReportById(updatedReport.getIdReport());
+        syncService.syncAllReports();
 
         // Convertir entidad de vuelta a DTO
         return convertToDTO(updatedReport);

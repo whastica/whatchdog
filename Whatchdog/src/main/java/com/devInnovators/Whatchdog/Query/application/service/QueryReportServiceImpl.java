@@ -98,22 +98,22 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
 
     @Override
-    public List<ReportDTO> getReportsByAdminId(String adminId) {
-        if (adminId == null) {
+    public List<ReportDTO> getReportsByAdminId(String idAdminC) {
+        if (idAdminC == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Admin ID cannot be null");
         }
 
         // Log para depuración
-        System.out.println("Consultando reports con admin ID: " + adminId);
+        System.out.println("Consultando reports con admin ID: " + idAdminC);
         
-        List<QueryReport> reports = reportRepository.findByIdAdminC(adminId);
+        List<QueryReport> reports = reportRepository.findByIdAdminC(idAdminC);
          // Log para depuración
         
 
         System.out.println("Número de reports encontrados con MongoTemplate: " + reports.size());
 
         if (reports.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reports found with admin ID: " + adminId);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "No reports found with admin ID: " + idAdminC);
         }
 
         return reports.stream()

@@ -40,6 +40,9 @@ public class CommandReportController {
 
     @PutMapping("/{idReport}")
     public ResponseEntity<ReportDTO> updateReport(@PathVariable String idReport, @RequestBody ReportDTO reportDTO) {
+        if (reportDTO.getIdReport() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
+        }
         ReportDTO updatedReport = reportService.updateReport(idReport, reportDTO);
         return ResponseEntity.ok(updatedReport); // 200 OK
     }

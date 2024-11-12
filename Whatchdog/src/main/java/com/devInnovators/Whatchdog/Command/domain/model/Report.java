@@ -36,8 +36,8 @@ public class Report {
     @JoinColumn(name = "citizen_id")
     private Citizen citizen;
 
-    @ManyToOne(fetch = FetchType.LAZY)  // Asociación con Issue
-    @JoinColumn(name = "issue_id")
+    @ManyToOne(fetch = FetchType.LAZY, optional = true)  // Asociación con Issue
+    @JoinColumn(name = "issue_id", nullable = true)
     private Issue issue;
 
     @ManyToOne(fetch = FetchType.LAZY)  // Asociación con adminc 
