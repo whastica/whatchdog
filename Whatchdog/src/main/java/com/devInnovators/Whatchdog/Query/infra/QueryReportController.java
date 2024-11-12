@@ -11,10 +11,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEvent;
+
 import org.springframework.http.ResponseEntity;
 
 
@@ -60,6 +64,14 @@ public class QueryReportController {
         // Retorna 200 OK con la lista de reportes
         return ResponseEntity.ok(reportes);
     }
+
+    //Actualiza el estado de un reporte y disparar el evento de revision
+    @PutMapping("/status")
+    public ResponseEntity<Void> updateReportStatus(@RequestBody RevisedReportEvent revisedReportEvent) {
+        reportService.updateReportStatus(revisedReportEvent);
+        return ResponseEntity.noContent().build(); // 204 No Content
+    }
+
 
 
 }

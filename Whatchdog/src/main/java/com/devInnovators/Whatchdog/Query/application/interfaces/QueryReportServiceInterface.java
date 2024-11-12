@@ -5,6 +5,7 @@ import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 import java.util.List;
 
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEvent;
 
 public interface QueryReportServiceInterface {
 
@@ -13,6 +14,7 @@ public interface QueryReportServiceInterface {
     List<ReportDTO> findReportsByStatus(QueryStatus status); 
     List<ReportDTO> getReportsByCategoryIssue(String categoryIssue);
     List<ReportDTO> getReportsByAdminId(String adminId);  
+    void updateReportStatus(RevisedReportEvent revisedReportEvent);
 
   
 

@@ -159,7 +159,8 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         // Guardar el reporte actualizado en la base de datos
         Report updatedReport = reportRepository.save(existingReport);
 
-        syncService.syncAllReports();
+        syncService.syncReportById(idReport);
+        
 
         // Convertir entidad de vuelta a DTO
         return convertToDTO(updatedReport);

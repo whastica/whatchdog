@@ -11,6 +11,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
+import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEvent;
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 /* import com.devInnovators.Whatchdog.Command.domain.model.Report;
 import com.devInnovators.Whatchdog.Query.application.DTO.AdminDTO; */
@@ -121,6 +122,26 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public void updateReportStatus(RevisedReportEvent revisedReportEvent) {
+            // Buscar el reporte en la base de datos usando el ID del evento
+            QueryReport queryReport = reportRepository.findByIdReport(revisedReportEvent.getId());
+            if (queryReport == null) {
+                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in Query database");
+            }
+
+            // Actualizar el estado y otros atributos relevantes
+            queryReport.setStatus(revisedReportEvent.getStatus());
+            queryReport.setCategoryIssue(revisedReportEvent.getCategoryIssue().toString());
+            queryReport.setUpdateDate(revisedReportEvent.getUpdateDate());
+            queryReport.setIdissue(revisedReportEvent.getIssueId());
+
+            // Guardar los cambios en la base de datos
+            reportRepository.save(queryReport);
+    }
+    
+
+
     // Método privado para la conversión de Report a ReportDTO
     private ReportDTO convertReportToDTO(QueryReport report) {  
         // Manejo seguro de nulos para obtener los IDs
@@ -150,58 +171,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
        
     }
 
-   /*  // Métodos privados para convertir entidades anidadas a sus respectivos DTOs
-    private CitizenDTO convertCitizenToDTO(QueryCitizen citizen) {
-        return new CitizenDTO(
-                citizen.getId(),
-                citizen.getName(),
-                citizen.getEmail(),
-                citizen.getPhone()
-        );
-    }
- */
-   /*  private IssueDTO convertIssueToDTO(QueryIssue issue) {
-       // Convertir cada reporte en una lista de IDs de reporte (String)
-        List<String> reportIds = issue.getReportsList().stream()
-            .map(QueryReport::getIdReport)  // Extrae el ID de cada reporte
-            .collect(Collectors.toList());
-
-        // Convertir idAdminC a AdminDTO
-        AdminDTO adminDTO = convertAdminToDTO(issue.getIdAdminC());
-
-        return new IssueDTO(
-            issue.getId(),
-            issue.getCategoryIssue(),
-            issue.getPriority(),
-            issue.getStatusIssue(),
-            issue.getResolutionTeam(),
-            reportIds,       // Lista de IDs de los reportes
-            adminDTO
-        );
-    } */
-/* 
-    private CoordinatesDTO convertCoordinatesToDTO(QueryCoordinates coordinates) {
-        return new CoordinatesDTO(
-                coordinates.getLatitude(),
-                coordinates.getLongitude()
-        );
-    }
-
-    private AdminDTO convertAdminToDTO(QueryAdminC admin) {
-        List<ReportDTO> assignedReportDTOs;
-
-        // Verifica si getAssignedReport() es null
-        if (admin.getAssignedReport() != null) {
-            assignedReportDTOs = admin.getAssignedReport().stream()
-                .map(this::convertReportToDTO) // Asegúrate de que este método existe
-                .collect(Collectors.toList());
-        } else {
-            assignedReportDTOs = new ArrayList<>(); // Crea una lista vacía si es null
-        }
-
-        // Crea y devuelve el AdminDTO
-        return new AdminDTO(admin.getId(), admin.getName(), assignedReportDTOs);
-    } */
+  
 
     private CommentDTO convertCommentToDTO(QueryComment comment) {
            // Obtén solo el ID del ciudadano como String

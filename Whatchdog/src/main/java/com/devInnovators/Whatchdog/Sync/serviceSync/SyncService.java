@@ -41,10 +41,27 @@ public class SyncService {
 
          // Convertir el reporte de comandos a reporte de consulta
         QueryReport queryReport = convertToQueryReport(commandReport);
-
-        // Guardar en la base de datos de consultas (MongoDB)
-        queryReportRepository.save(queryReport);
+        // Verificar si el reporte ya existe en MongoDB antes de guardar
+        if (queryReportRepository.existsByIdReport(queryReport.getIdReport())) {
+            // Si el reporte ya existe, actualizarlo
+            QueryReport existingQueryReport = queryReportRepository.findByIdReport(queryReport.getIdReport());
+            updateQueryReportFields(existingQueryReport, queryReport);
+            queryReportRepository.save(existingQueryReport);
+        } else {
+            // Si el reporte no existe, insertar un nuevo documento
+            queryReportRepository.save(queryReport);
+}
         
+    }
+     // Método para actualizar los campos de un reporte existente en MongoDB
+     private void updateQueryReportFields(QueryReport existingQueryReport, QueryReport newQueryReport) {
+        existingQueryReport.setDescription(newQueryReport.getDescription());
+        existingQueryReport.setIdcitizen(newQueryReport.getIdcitizen());
+        existingQueryReport.setIdissue(newQueryReport.getIdissue());
+        existingQueryReport.setStatus(newQueryReport.getStatus());
+        existingQueryReport.setCoordinates(newQueryReport.getCoordinates());
+        existingQueryReport.setUpdateDate(newQueryReport.getUpdateDate());
+        existingQueryReport.setFotoUrl(newQueryReport.getFotoUrl());
     }
 
     // Método para sincronizar todos los reportes de la base de datos de comandos a la de consulta
@@ -58,21 +75,12 @@ public class SyncService {
             // Convertir el reporte de la base de datos de comandos a un reporte de consulta
             QueryReport queryReport = convertToQueryReport(commandReport);
 
+           
             // Verificar si el reporte ya existe en MongoDB antes de guardar
             if (queryReportRepository.existsByIdReport(queryReport.getIdReport())) {
-                // Si el reporte ya existe, obtener el reporte existente de MongoDB
+                // Si el reporte ya existe, actualizarlo 
                 QueryReport existingQueryReport = queryReportRepository.findByIdReport(queryReport.getIdReport());
-
-                // Actualizar los campos del reporte con los valores del nuevo reporte
-                existingQueryReport.setDescription(queryReport.getDescription());
-                existingQueryReport.setIdcitizen(queryReport.getIdcitizen());
-                existingQueryReport.setIdissue(queryReport.getIdissue());
-                existingQueryReport.setStatus(queryReport.getStatus());
-                existingQueryReport.setCoordinates(queryReport.getCoordinates());
-                existingQueryReport.setUpdateDate(queryReport.getUpdateDate());
-                existingQueryReport.setFotoUrl(queryReport.getFotoUrl());
-
-                // Guardar la actualización en MongoDB
+                updateQueryReportFields(existingQueryReport, queryReport);
                 queryReportRepository.save(existingQueryReport);
             } else {
                 // Si el reporte no existe, insertar un nuevo documento
