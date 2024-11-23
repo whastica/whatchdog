@@ -65,12 +65,12 @@ public class QueryReportController {
         return ResponseEntity.ok(reportes);
     }
 
-    //Actualiza el estado de un reporte y disparar el evento de revision
+   /*   //Actualiza el estado de un reporte y disparar el evento de revision
     @PutMapping("/status")
     public ResponseEntity<Void> updateReportStatus(@RequestBody RevisedReportEvent revisedReportEvent) {
         reportService.updateReportStatus(revisedReportEvent);
         return ResponseEntity.noContent().build(); // 204 No Content
-    }
+    }  */
 
 
 

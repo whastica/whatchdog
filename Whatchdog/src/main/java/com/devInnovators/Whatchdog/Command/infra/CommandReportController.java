@@ -27,7 +27,7 @@ public class CommandReportController {
     @PostMapping
     public ResponseEntity<ReportDTO> createReport(@RequestBody ReportDTO reportDTO) {
         // Verificar que el idReport no sea nulo
-        if (reportDTO.getIdReport() == null) {
+        if (reportDTO.get_id() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
         }
 
@@ -38,12 +38,12 @@ public class CommandReportController {
         return ResponseEntity.status(201).body(createdReport);  // 201 Created
     }
 
-    @PutMapping("/{idReport}")
-    public ResponseEntity<ReportDTO> updateReport(@PathVariable String idReport, @RequestBody ReportDTO reportDTO) {
-        if (reportDTO.getIdReport() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
+    @PutMapping("/{_id}")
+    public ResponseEntity<ReportDTO> updateReport(@PathVariable String _id, @RequestBody ReportDTO reportDTO) {
+        if (reportDTO.get_id() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "_id is required");
         }
-        ReportDTO updatedReport = reportService.updateReport(idReport, reportDTO);
+        ReportDTO updatedReport = reportService.updateReport(_id, reportDTO);
         return ResponseEntity.ok(updatedReport); // 200 OK
     }
 

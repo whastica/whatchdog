@@ -24,6 +24,7 @@ import java.util.List;
 
 public class QueryReport {
     @Id
+    @Field("_id") 
     private String idReport;
     private String description;
    

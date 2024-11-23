@@ -17,7 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReportDTO {
 
-    private String idReport;
+    private String _id;
     private String description;
     private String idCitizen;                // ID de Citizen
     private String idissue;                  // ID de Issue

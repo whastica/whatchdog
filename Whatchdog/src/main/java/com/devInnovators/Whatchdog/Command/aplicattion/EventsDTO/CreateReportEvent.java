@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class CreateReportEvent implements Serializable {
-    private String idReport;                       // ID del reporte creado
+    private String id;                       // ID del reporte creado
     private String description;              // Descripción del reporte
     private String citizenId;                // ID del ciudadano que creó el reporte
     private Status status;                   // Estado inicial del reporte (e.g., NUEVO, EN_PROGRESO)

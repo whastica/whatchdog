@@ -27,8 +27,8 @@ import lombok.NoArgsConstructor;
 public class Report {
 
     @Id
-    @Column(name = "id_report")
-    private String idReport;
+    @Column(name = "_id")
+    private String _id;
 
     private String description;
 

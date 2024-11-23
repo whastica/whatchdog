@@ -51,16 +51,17 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     @Override
     public ReportDTO createReport(ReportDTO reportDTO) {
 
-        if (reportDTO.getIdReport() == null) {
+        if (reportDTO.get_id() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
         }
 
         // Imprimir el idReport para asegurarse de que se está recibiendo correctamente
-        System.out.println("Received idReport: " + reportDTO.getIdReport());
+        System.out.println("Received idReport: " + reportDTO.get_id());
         // Crear la entidad Report y mapear los valores del DTO
         Report report = new Report();
-
-        report.setIdReport(reportDTO.getIdReport());
+        if (reportDTO.get_id() != null) {
+            report.set_id(reportDTO.get_id());
+        }
         report.setDescription(reportDTO.getDescription());
 
         // Cargar el Citizen si el ID es válido, o lanzar excepción si no se encuentra
@@ -122,49 +123,67 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         return convertToDTO(savedReport);
     }
 
-    // Método para actualizar un reporte existente
-    @Override
-    public ReportDTO updateReport(String idReport, ReportDTO reportDTO) {
-        
-        if (reportDTO.getIdReport() == null) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "idReport is required");
-        }
-        System.out.println("Received idReport: " + idReport);
-        // Buscar el reporte existente
-        Report existingReport = reportRepository.findById(idReport)
-            .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + idReport));
-
-        // Cargar las entidades de Citizen y Problem
-        Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
-            .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
+        // Método para actualizar un reporte existente
+        @Override
+        public ReportDTO updateReport(String _id, ReportDTO reportDTO) {
             
-        // Actualizar los campos del reporte
-       
-        existingReport.setDescription(reportDTO.getDescription());
-        existingReport.setCitizen(citizen);  // Establecer la entidad Citizen
-       
-        // Cargar Issue solo si el idissue no es null
-        if (reportDTO.getIdissue() != null) {
-            Issue issue = issueRepository.findById(reportDTO.getIdissue())
-                .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
-            existingReport.setIssue(issue);
-        } else {
-            existingReport.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
-        }
-        existingReport.setStatus(reportDTO.getStatus());
-        existingReport.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
-        existingReport.setUpdateDate(LocalDateTime.now()); // Actualizar la fecha de actualización
-        existingReport.setFotoUrl(reportDTO.getFotoUrl());
+            if (reportDTO.get_id() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "_id is required");
+            }
+            System.out.println("Received idReport: " + _id);
+            // Buscar el reporte existente
+            Report existingReport = reportRepository.findById(_id)
+                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + _id));
 
-        // Guardar el reporte actualizado en la base de datos
-        Report updatedReport = reportRepository.save(existingReport);
-
-        syncService.syncReportById(idReport);
+            
+           /*  // Cargar las entidades de Citizen y Problem
+            Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
+                .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
+                 */
+            // Actualizar los campos del reporte
+         // Actualizar solo los campos que vienen en el DTO
+            if (reportDTO.getDescription() != null) {
+                existingReport.setDescription(reportDTO.getDescription());
+            }
+            if (reportDTO.getIdCitizen() != null) {
+                Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
+                    .orElseThrow(() -> new ResourceNotFoundException("Citizen not found with id: " + reportDTO.getIdCitizen()));
+                existingReport.setCitizen(citizen);
+            }
+            
         
+            // Cargar Issue solo si el idissue no es null
+            if (reportDTO.getIdissue() != null) {
+                Issue issue = issueRepository.findById(reportDTO.getIdissue())
+                    .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
+                existingReport.setIssue(issue);
+            } else {
+                existingReport.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
+            }
+            // Solo actualizamos el status y otros campos que se pasan desde el evento
+            if (reportDTO.getStatus() != null) {
+                existingReport.setStatus(reportDTO.getStatus());
+            }
+            if (reportDTO.getCoordinates() != null) {
+                existingReport.setCoordinates(reportDTO.getCoordinates());
+            }
 
-        // Convertir entidad de vuelta a DTO
-        return convertToDTO(updatedReport);
-    }
+            //existingReport.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
+            existingReport.setUpdateDate(LocalDateTime.now()); // Actualizar la fecha de actualización
+            // Foto URL solo si se pasa en el DTO
+            if (reportDTO.getFotoUrl() != null) {
+                existingReport.setFotoUrl(reportDTO.getFotoUrl());
+            }
+
+            // Guardar el reporte actualizado en la base de datos
+            Report updatedReport = reportRepository.save(existingReport);
+
+            syncService.syncReportById(_id);
+            
+
+            // Convertir entidad de vuelta a DTO
+            return convertToDTO(updatedReport);
+        }
 
     // Método para eliminar un reporte
     @Override
@@ -181,7 +200,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     // Método para convertir Report a ReportDTO
     private ReportDTO convertToDTO(Report report) {
         ReportDTO dto = new ReportDTO();
-        dto.setIdReport(report.getIdReport());
+        dto.set_id(report.get_id());
         dto.setDescription(report.getDescription());
         dto.setIdCitizen(report.getCitizen() != null ? report.getCitizen().getId() : null);
         dto.setIdissue(report.getIssue() != null ? report.getIssue().getId() : null);
@@ -202,7 +221,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     
         // Convierte los comentarios a DTOs
         dto.setComment(report.getComments().stream()
-        .map(comment -> new CommentDTO(comment.getId(), comment.getDescription(), comment.getCitizenId().getId(), comment.getCreateDate(), comment.getReport().getIdReport()))
+        .map(comment -> new CommentDTO(comment.getId(), comment.getDescription(), comment.getCitizenId().getId(), comment.getCreateDate(), comment.getReport().get_id()))
         .collect(Collectors.toList()));
         
         return dto;
@@ -256,7 +275,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         dto.setDescription(comment.getDescription());
         dto.setCitizenId(comment.getCitizenId().getId());
         dto.setCreateDate(comment.getCreateDate());
-        dto.setReportId(comment.getReport().getIdReport());
+        dto.setReportId(comment.getReport().get_id());
         return dto;
     }
 

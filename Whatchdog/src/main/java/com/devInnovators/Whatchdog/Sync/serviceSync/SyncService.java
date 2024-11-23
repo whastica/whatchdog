@@ -1,9 +1,13 @@
 package com.devInnovators.Whatchdog.Sync.serviceSync;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Update;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -21,6 +25,7 @@ import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
 
+import org.springframework.data.mongodb.core.query.Query;
 import jakarta.transaction.Transactional;
 
 @Service
@@ -33,26 +38,50 @@ public class SyncService {
     private QueryReportRepository queryReportRepository;
 
     
+    @Autowired
+    private MongoTemplate mongoTemplate;
+
     @Transactional
     public void syncReportById(String reportId) {
-        // Buscar el reporte en la base de datos de comandos
+    // Obtener el reporte de la base de datos de comandos
         Report commandReport = commandReportRepository.findById(reportId)
-            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in Command database"));
-
-         // Convertir el reporte de comandos a reporte de consulta
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in Command DB"));
+            // Convertir el reporte de la base de datos de comandos a un reporte de consulta
         QueryReport queryReport = convertToQueryReport(commandReport);
-        // Verificar si el reporte ya existe en MongoDB antes de guardar
-        if (queryReportRepository.existsByIdReport(queryReport.getIdReport())) {
-            // Si el reporte ya existe, actualizarlo
-            QueryReport existingQueryReport = queryReportRepository.findByIdReport(queryReport.getIdReport());
-            updateQueryReportFields(existingQueryReport, queryReport);
-            queryReportRepository.save(existingQueryReport);
-        } else {
-            // Si el reporte no existe, insertar un nuevo documento
-            queryReportRepository.save(queryReport);
-}
-        
+
+        // Preparar la consulta y la actualización
+        Query query = new Query(Criteria.where("_id").is(queryReport.getIdReport()));
+        Update update = new Update()
+            .set("description", queryReport.getDescription())
+            .set("citizen", queryReport.getIdcitizen())
+            .set("issue", queryReport.getIdissue())
+            .set("status", queryReport.getStatus())
+            .set("coordinates", queryReport.getCoordinates())
+            .set("fotoUrl", queryReport.getFotoUrl())
+            .set("updateDate", LocalDateTime.now());
+
+        // Realizar la operación de upsert
+        mongoTemplate.upsert(query, update, QueryReport.class);
     }
+/* 
+        // Convertir el reporte de la base de datos de comandos a un reporte de consulta
+        QueryReport queryReport = convertToQueryReport(commandReport);
+
+        // Verificamos si el reporte ya existe en MongoDB
+        QueryReport existingReport = queryReportRepository.findByIdReport(queryReport.getIdReport());
+
+        if (existingReport != null) {
+            // Si el reporte ya existe, lo actualizamos
+            updateQueryReportFields(existingReport, queryReport);
+
+            // Guardamos la actualización en MongoDB
+            queryReportRepository.save(existingReport);
+        } else {
+            // Si el reporte no existe, lo insertamos
+            queryReportRepository.save(queryReport);
+        }
+        
+    }*/
      // Método para actualizar los campos de un reporte existente en MongoDB
      private void updateQueryReportFields(QueryReport existingQueryReport, QueryReport newQueryReport) {
         existingQueryReport.setDescription(newQueryReport.getDescription());
@@ -62,7 +91,7 @@ public class SyncService {
         existingQueryReport.setCoordinates(newQueryReport.getCoordinates());
         existingQueryReport.setUpdateDate(newQueryReport.getUpdateDate());
         existingQueryReport.setFotoUrl(newQueryReport.getFotoUrl());
-    }
+    } 
 
     // Método para sincronizar todos los reportes de la base de datos de comandos a la de consulta
     @Transactional
@@ -104,7 +133,7 @@ public class SyncService {
     // Conversión de CommandReport a QueryReport
     private QueryReport convertToQueryReport(Report commandReport) {
         QueryReport queryReport = new QueryReport();
-        queryReport.setIdReport(commandReport.getIdReport());
+        queryReport.setIdReport(commandReport.get_id());
         queryReport.setDescription(commandReport.getDescription());
         queryReport.setIdcitizen(commandReport.getCitizen().getId()); // Conversión de Citizen
          // Verificación si Issue es null antes de asignarlo
@@ -148,7 +177,7 @@ public class SyncService {
   
         
     // Buscar el reporte correspondiente en MongoDB por el id
-        QueryReport queryReport = queryReportRepository.findById(commandComments.getReport().getIdReport())
+        QueryReport queryReport = queryReportRepository.findById(commandComments.getReport().get_id())
         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found"));
 
         queryComments.setIdreport(queryReport);  // Ahora se pasa un objeto QueryRepo

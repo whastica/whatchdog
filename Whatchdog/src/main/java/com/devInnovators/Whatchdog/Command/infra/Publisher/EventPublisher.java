@@ -3,6 +3,10 @@ package com.devInnovators.Whatchdog.Command.infra.Publisher;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.stereotype.Component;
 
+import com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO.CreateReportEvent;
+import com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO.DeleteReportEvent;
+import com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO.UpdateReportEvent;
+
 @Component
 public class EventPublisher {
        // Inyectar el RabbitTemplate
@@ -12,16 +16,16 @@ public class EventPublisher {
         this.rabbitTemplate = rabbitTemplate;
     }
 
-    public void publishCreateReportEvent(String id) {
-        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.creado", id);
+    public void publishCreateReportEvent(CreateReportEvent reportDTO) {
+        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.creado", reportDTO);
     }
 
-    public void publishUpdateReportEvent(String id) {
-        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.actualizado", id);
+    public void publishUpdateReportEvent(UpdateReportEvent reportDTO) {
+        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.actualizado", reportDTO);
     }
 
-    public void publishDeleteReportEvent(String id) {
-        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.eliminado", id);
+    public void publishDeleteReportEvent(DeleteReportEvent reportDTO) {
+        rabbitTemplate.convertAndSend("reporte_exchange", "reporte.eliminado", reportDTO);
     }
     
 

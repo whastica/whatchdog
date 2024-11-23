@@ -2,8 +2,7 @@ package com.devInnovators.Whatchdog.Query.application.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-
-
+import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -35,24 +34,22 @@ import com.devInnovators.Whatchdog.Query.domain.repository.QueryAdminCRepository
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
 public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
-   
+ 
     private final QueryReportRepository reportRepository;
-    private final QueryCitizenRepository citizenRepository;
-    private final QueryIssueRepository issueRepository;
-    private final QueryAdminCRepository adminCRepository;
+
 
 
     @Autowired
-    public QueryReportServiceImpl(QueryReportRepository reportRepository, QueryCitizenRepository citizenRepository, QueryIssueRepository issueRepository, QueryAdminCRepository adminCRepository) {
+ 
+    public QueryReportServiceImpl(QueryReportRepository reportRepository) {
         this.reportRepository = reportRepository;
-        this.citizenRepository = citizenRepository;
-        this.issueRepository = issueRepository;
-        this.adminCRepository = adminCRepository;
+       
     }
     
  
@@ -138,9 +135,11 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
             // Guardar los cambios en la base de datos
             reportRepository.save(queryReport);
-    }
+    } 
+ 
     
 
+    
 
     // Método privado para la conversión de Report a ReportDTO
     private ReportDTO convertReportToDTO(QueryReport report) {  
