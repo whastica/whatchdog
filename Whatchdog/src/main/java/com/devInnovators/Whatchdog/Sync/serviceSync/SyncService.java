@@ -56,6 +56,7 @@ public class SyncService {
             .set("citizen", queryReport.getIdcitizen())
             .set("issue", queryReport.getIdissue())
             .set("status", queryReport.getStatus())
+            .set("categoryIssue", queryReport.getCategoryIssue())
             .set("coordinates", queryReport.getCoordinates())
             .set("fotoUrl", queryReport.getFotoUrl())
             .set("updateDate", LocalDateTime.now());
@@ -88,6 +89,7 @@ public class SyncService {
         existingQueryReport.setIdcitizen(newQueryReport.getIdcitizen());
         existingQueryReport.setIdissue(newQueryReport.getIdissue());
         existingQueryReport.setStatus(newQueryReport.getStatus());
+        existingQueryReport.setCategoryIssue(newQueryReport.getCategoryIssue());
         existingQueryReport.setCoordinates(newQueryReport.getCoordinates());
         existingQueryReport.setUpdateDate(newQueryReport.getUpdateDate());
         existingQueryReport.setFotoUrl(newQueryReport.getFotoUrl());

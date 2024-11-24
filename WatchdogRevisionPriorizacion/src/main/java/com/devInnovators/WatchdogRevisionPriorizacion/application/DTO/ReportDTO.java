@@ -16,14 +16,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ReportDTO {
 
-    private String id;
+    private String _id;
     private String description;
-    private String citizenId;                // ID de Citizen
-    private String issueId;                  // ID de Issue
-    private String admincId;                 // ID de AdminC
-    private List<String> commentIds;         // Lista de IDs de los comentarios
+    private String idCitizen;                // ID de Citizen
+    private String idAdminC;                  // ID de Issue
     private Status status;
-    private CategoryIssue categoryIssue;
+    private CategoryIssue categoryIssue;                 // ID de AdminC
+    private List<String> comment;         // Lista de IDs de los comentarios
     private Coordinates coordinates;
     private LocalDateTime createDate;
     private LocalDateTime updateDate;

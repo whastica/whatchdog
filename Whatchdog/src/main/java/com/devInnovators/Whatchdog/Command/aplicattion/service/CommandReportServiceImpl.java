@@ -134,12 +134,7 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
             // Buscar el reporte existente
             Report existingReport = reportRepository.findById(_id)
                 .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + _id));
-
-            
-           /*  // Cargar las entidades de Citizen y Problem
-            Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
-                .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
-                 */
+           
             // Actualizar los campos del reporte
          // Actualizar solo los campos que vienen en el DTO
             if (reportDTO.getDescription() != null) {
@@ -173,6 +168,9 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
             // Foto URL solo si se pasa en el DTO
             if (reportDTO.getFotoUrl() != null) {
                 existingReport.setFotoUrl(reportDTO.getFotoUrl());
+            }
+            if(reportDTO.getCategoryIssue()!=null){
+                existingReport.setCategoryIssue(reportDTO.getCategoryIssue());
             }
 
             // Guardar el reporte actualizado en la base de datos

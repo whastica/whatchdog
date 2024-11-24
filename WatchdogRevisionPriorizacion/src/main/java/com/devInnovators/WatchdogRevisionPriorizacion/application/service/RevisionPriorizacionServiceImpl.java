@@ -36,7 +36,7 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
     @Transactional
     public IssueDTO createIssue(IssueDTO issueDTO) {
         Issue issue = new Issue();
-        issue.setCategoryIssue(issueDTO.getCategory());
+        issue.setId(issueDTO.getId());
         issue.setCategoryIssue(issueDTO.getCategory());
         issue.setStatusIssue(StatusIssue.ASIGNADO); // Estado inicial
         issue.setPriority(issueDTO.getPriority());
@@ -66,7 +66,7 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
                 issue.getStatusIssue(),
                 issue.getResolutionTeam(),
                 issue.getReportList() != null 
-                    ? issue.getReportList().stream().map(Report::getId).collect(Collectors.toList()) 
+                    ? issue.getReportList().stream().map(Report::get_id).collect(Collectors.toList()) 
                     : new ArrayList<>(),
                 issue.getAdminc() != null ? issue.getAdminc().getId() : null
             ))
@@ -110,7 +110,7 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
 
         // 5. Disparar el evento de actualización
         UpdateReportEvent updatedReportEvent = new UpdateReportEvent(
-            report.getId(),
+            report.get_id(),
             report.getDescription(),
             report.getAdminC() != null ? report.getAdminC().getId() : null,  // Aquí agregamos admincId
             report.getStatus(),

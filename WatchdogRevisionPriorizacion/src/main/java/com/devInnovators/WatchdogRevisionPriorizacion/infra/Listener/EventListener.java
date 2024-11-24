@@ -71,7 +71,7 @@ public class EventListener {
     
             // 3. Publicar el evento RevisedReportEvent
             RevisedReportEvent revisedReportEvent = new RevisedReportEvent(
-                report.getId(),
+                report.get_id(),
                 report.getAdminC().getId(),  // El ID del administrador encargado de la actualización
                 report.getStatus(),
                 report.getCategoryIssue(),
