@@ -4,7 +4,6 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -34,16 +33,16 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     private final CommandIssueRepository issueRepository; // Asegúrate de tener un repositorio para Problem
     private final CommandAdminCRepository adminCRepository;
     private final CommandCommentRepository commentRepository;
-    
-    @Autowired
-    private SyncService syncService;
 
-    public CommandReportServiceImpl(CommandReportRepository reportRepository, CommandCitizenRepository citizenRepository,CommandIssueRepository issueRepository, CommandAdminCRepository admincRepository, CommandCommentRepository commentRepository) {
+    private final SyncService syncService;
+
+    public CommandReportServiceImpl(CommandReportRepository reportRepository, CommandCitizenRepository citizenRepository,CommandIssueRepository issueRepository, CommandAdminCRepository admincRepository, CommandCommentRepository commentRepository,SyncService syncService) {
         this.reportRepository = reportRepository;
         this.citizenRepository = citizenRepository;
         this.issueRepository = issueRepository;
         this.adminCRepository= admincRepository;
         this.commentRepository= commentRepository;
+        this.syncService = syncService;
     }
 
 
@@ -123,65 +122,62 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
         return convertToDTO(savedReport);
     }
 
-        // Método para actualizar un reporte existente
-        @Override
-        public ReportDTO updateReport(String _id, ReportDTO reportDTO) {
-            
-            if (reportDTO.get_id() == null) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "_id is required");
-            }
-            System.out.println("Received idReport: " + _id);
-            // Buscar el reporte existente
-            Report existingReport = reportRepository.findById(_id)
-                .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + _id));
-           
-            // Actualizar los campos del reporte
-         // Actualizar solo los campos que vienen en el DTO
-            if (reportDTO.getDescription() != null) {
-                existingReport.setDescription(reportDTO.getDescription());
-            }
-            if (reportDTO.getIdCitizen() != null) {
-                Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
-                    .orElseThrow(() -> new ResourceNotFoundException("Citizen not found with id: " + reportDTO.getIdCitizen()));
-                existingReport.setCitizen(citizen);
-            }
-            
-        
-            // Cargar Issue solo si el idissue no es null
-            if (reportDTO.getIdissue() != null) {
-                Issue issue = issueRepository.findById(reportDTO.getIdissue())
-                    .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
-                existingReport.setIssue(issue);
-            } else {
-                existingReport.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
-            }
-            // Solo actualizamos el status y otros campos que se pasan desde el evento
-            if (reportDTO.getStatus() != null) {
-                existingReport.setStatus(reportDTO.getStatus());
-            }
-            if (reportDTO.getCoordinates() != null) {
-                existingReport.setCoordinates(reportDTO.getCoordinates());
-            }
+    @Override
+    public ReportDTO updateReport(String _id, ReportDTO reportDTO) {
+        System.out.println("Received idReport: " + _id);
 
-            //existingReport.setCoordinates(new Coordinates(reportDTO.getCoordinates().getLatitude(), reportDTO.getCoordinates().getLongitude()));
-            existingReport.setUpdateDate(LocalDateTime.now()); // Actualizar la fecha de actualización
-            // Foto URL solo si se pasa en el DTO
-            if (reportDTO.getFotoUrl() != null) {
-                existingReport.setFotoUrl(reportDTO.getFotoUrl());
-            }
-            if(reportDTO.getCategoryIssue()!=null){
-                existingReport.setCategoryIssue(reportDTO.getCategoryIssue());
-            }
+        // Buscar el reporte existente
+        Report existingReport = reportRepository.findById(_id)
+            .orElseThrow(() -> new ResourceNotFoundException("Reporte no encontrado con id: " + _id));
 
-            // Guardar el reporte actualizado en la base de datos
-            Report updatedReport = reportRepository.save(existingReport);
-
-            syncService.syncReportById(_id);
-            
-
-            // Convertir entidad de vuelta a DTO
-            return convertToDTO(updatedReport);
+        // Actualizar los campos del reporte solo si se pasan en el DTO
+        if (reportDTO.getDescription() != null) {
+            existingReport.setDescription(reportDTO.getDescription());
         }
+        if (reportDTO.getIdCitizen() != null) {
+            Citizen citizen = citizenRepository.findById(reportDTO.getIdCitizen())
+                .orElseThrow(() -> new ResourceNotFoundException("Ciudadano no encontrado con id: " + reportDTO.getIdCitizen()));
+            existingReport.setCitizen(citizen);
+        }
+
+        // Cargar Issue solo si el idissue no es null
+        if (reportDTO.getIdissue() != null) {
+            Issue issue = issueRepository.findById(reportDTO.getIdissue())
+                .orElseThrow(() -> new ResourceNotFoundException("Problema no encontrado con id: " + reportDTO.getIdissue()));
+            existingReport.setIssue(issue);
+        } else {
+            existingReport.setIssue(null);  // Si idissue es null, no asignamos ningún Issue
+        }
+
+        // Solo actualizamos el status y otros campos que se pasan desde el evento
+        if (reportDTO.getStatus() != null) {
+            existingReport.setStatus(reportDTO.getStatus());
+        }
+        if (reportDTO.getCoordinates() != null) {
+            existingReport.setCoordinates(reportDTO.getCoordinates());
+        }
+
+        // Fecha de actualización
+        existingReport.setUpdateDate(LocalDateTime.now());
+
+        // Foto URL solo si se pasa en el DTO
+        if (reportDTO.getFotoUrl() != null) {
+            existingReport.setFotoUrl(reportDTO.getFotoUrl());
+        }
+
+        if (reportDTO.getCategoryIssue() != null) {
+            existingReport.setCategoryIssue(reportDTO.getCategoryIssue());
+        }
+
+        // Guardar el reporte actualizado en la base de datos
+        Report updatedReport = reportRepository.save(existingReport);
+
+        // Sincronizar el reporte con el servicio de sincronización
+        syncService.syncReportById(_id);
+
+        // Convertir entidad de vuelta a DTO y retornar
+        return convertToDTO(updatedReport);
+    }
 
     // Método para eliminar un reporte
     @Override

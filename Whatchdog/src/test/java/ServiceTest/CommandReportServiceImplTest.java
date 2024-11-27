@@ -1,3 +1,5 @@
+package ServiceTest;
+
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -5,9 +7,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import static org.mockito.ArgumentMatchers.any;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.devInnovators.Whatchdog.Command.aplicattion.DTO.ReportDTO;
@@ -17,6 +24,7 @@ import com.devInnovators.Whatchdog.Command.domain.model.Report;
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandCitizenRepository;
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandReportRepository;
 import com.devInnovators.Whatchdog.Command.exception.ResourceNotFoundException;
+import com.devInnovators.Whatchdog.Sync.serviceSync.SyncService;
 
 @ExtendWith(MockitoExtension.class)
 public class CommandReportServiceImplTest {
@@ -26,6 +34,9 @@ public class CommandReportServiceImplTest {
 
     @Mock
     private CommandCitizenRepository citizenRepository;
+
+    @Mock
+    private SyncService syncService;
 
     /*@Mock
     private CommandIssueRepository issueRepository;
@@ -93,29 +104,33 @@ public class CommandReportServiceImplTest {
     }
 
     @Test
-    void testUpdateReport_success() {
-        // Arrange
-        String reportId = "report123";
+    public void testUpdateReport_success() {
+        // Configurar datos de prueba
+        String reportId = "123";
         ReportDTO reportDTO = new ReportDTO();
-        reportDTO.setDescription("Updated Description");
+        reportDTO.setDescription("New description");
 
-        Report mockExistingReport = new Report();
-        mockExistingReport.set_id(reportId);
-        mockExistingReport.setDescription("Old Description");
+        Report existingReport = new Report();
+        existingReport.set_id(reportId);
+        existingReport.setDescription("Old description");
 
-        Mockito.when(reportRepository.findById(reportId))
-                .thenReturn(Optional.of(mockExistingReport));
-        Mockito.when(reportRepository.save(Mockito.any(Report.class)))
-                .thenReturn(mockExistingReport);
+        // Configurar comportamiento de los mocks
+        when(reportRepository.findById(reportId)).thenReturn(Optional.of(existingReport));
+        when(reportRepository.save(any(Report.class))).thenReturn(existingReport);
 
-        // Act
+        // Aquí no importa el comportamiento real del método en el mock de syncService
+        doNothing().when(syncService).syncReportById(reportId);
+
+        // Ejecutar el método
         ReportDTO updatedReport = commandReportService.updateReport(reportId, reportDTO);
 
-        // Assert
+        // Verificar resultados
         assertNotNull(updatedReport);
-        assertEquals("Updated Description", updatedReport.getDescription());
-        Mockito.verify(reportRepository, Mockito.times(1)).save(Mockito.any(Report.class));
+        assertEquals("New description", updatedReport.getDescription());
+        verify(syncService, times(1)).syncReportById(reportId);
     }
+
+
 
     @Test
     void testUpdateReport_notFound() {
@@ -123,8 +138,9 @@ public class CommandReportServiceImplTest {
         String reportId = "nonExistentReportId";
         ReportDTO reportDTO = new ReportDTO();
 
-        Mockito.when(reportRepository.findById(reportId))
-                .thenReturn(Optional.empty());
+        // Mockear que no se encuentra el reporte
+        Mockito.lenient().when(reportRepository.findById(reportId))
+        .thenReturn(Optional.empty());  // Devuelve un Optional vacío para simular que no se encuentra el reporte
 
         // Act & Assert
         ResourceNotFoundException exception = assertThrows(
@@ -132,7 +148,10 @@ public class CommandReportServiceImplTest {
                 () -> commandReportService.updateReport(reportId, reportDTO)
         );
 
-        assertEquals("Reporte no encontrado con id: nonExistentReportId", exception.getMessage());
+        // Verificar el mensaje de la excepción
+        assertEquals("Reporte no encontrado con id: " + reportId, exception.getMessage());
+
+        // Verificar que no se haya llamado save al no encontrar el reporte
         Mockito.verify(reportRepository, Mockito.never()).save(Mockito.any(Report.class));
-    }
+        }
 }

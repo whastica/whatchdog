@@ -1,41 +1,24 @@
 package com.devInnovators.Whatchdog.Query.application.service;
 
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
+import com.devInnovators.Whatchdog.Command.exception.ResourceNotFoundException;
+import com.devInnovators.Whatchdog.Query.application.DTO.CommentDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEvent;
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
-/* import com.devInnovators.Whatchdog.Command.domain.model.Report;
-import com.devInnovators.Whatchdog.Query.application.DTO.AdminDTO; */
-import com.devInnovators.Whatchdog.Query.application.DTO.CitizenDTO;
-import com.devInnovators.Whatchdog.Query.application.DTO.CommentDTO;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryAdminC;
-/* import com.devInnovators.Whatchdog.Query.application.DTO.IssueDTO;
-import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryAdminC; */
-import com.devInnovators.Whatchdog.Query.domain.model.QueryCitizen;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryComment;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryIssue;
-/* import com.devInnovators.Whatchdog.Query.domain.model.QueryCoordinates;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryIssue; */
 import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryCitizenRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryIssueRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryAdminCRepository;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class QueryReportServiceImpl implements QueryReportServiceInterface {
@@ -121,25 +104,21 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
     @Override
     public void updateReportStatus(RevisedReportEvent revisedReportEvent) {
-            // Buscar el reporte en la base de datos usando el ID del evento
-            QueryReport queryReport = reportRepository.findByIdReport(revisedReportEvent.getId());
-            if (queryReport == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in Query database");
-            }
+        // Buscar el reporte en la base de datos usando el ID del evento
+        QueryReport queryReport = reportRepository.findByIdReport(revisedReportEvent.getId());
+        if (queryReport == null) {
+            throw new ResourceNotFoundException("Reporte no encontrado con id: " + revisedReportEvent.getId());
+        }
 
-            // Actualizar el estado y otros atributos relevantes
-            queryReport.setStatus(revisedReportEvent.getStatus());
-            queryReport.setCategoryIssue(revisedReportEvent.getCategoryIssue().toString());
-            queryReport.setUpdateDate(revisedReportEvent.getUpdateDate());
-            queryReport.setIdissue(revisedReportEvent.getIssueId());
+        // Actualizar el estado y otros atributos relevantes
+        queryReport.setStatus(revisedReportEvent.getStatus());
+        queryReport.setCategoryIssue(revisedReportEvent.getCategoryIssue().toString());
+        queryReport.setUpdateDate(revisedReportEvent.getUpdateDate());
+        queryReport.setIdissue(revisedReportEvent.getIssueId());
 
-            // Guardar los cambios en la base de datos
-            reportRepository.save(queryReport);
+        // Guardar los cambios en la base de datos
+        reportRepository.save(queryReport);
     } 
- 
-    
-
-    
 
     // Método privado para la conversión de Report a ReportDTO
     private ReportDTO convertReportToDTO(QueryReport report) {  

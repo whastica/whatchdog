@@ -1,4 +1,4 @@
-package com.devInnovators.Whatchdog.Command.exception;
+package com.devInnovators.Whatchdog.Query.exception;
 
 public class ResourceNotFoundException extends RuntimeException {
     public ResourceNotFoundException(String message) {
