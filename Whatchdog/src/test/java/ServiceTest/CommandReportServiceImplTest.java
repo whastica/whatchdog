@@ -38,15 +38,6 @@ public class CommandReportServiceImplTest {
     @Mock
     private SyncService syncService;
 
-    /*@Mock
-    private CommandIssueRepository issueRepository;
-
-
-    @Mock
-    private CommandCommentRepository commentRepository;
-
-    @Mock
-    private SyncService syncService;*/
 
     @InjectMocks
     private CommandReportServiceImpl commandReportService;

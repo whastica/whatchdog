@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -25,10 +24,6 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
  
     private final QueryReportRepository reportRepository;
-
-
-
-    @Autowired
  
     public QueryReportServiceImpl(QueryReportRepository reportRepository) {
         this.reportRepository = reportRepository;
@@ -36,6 +31,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
     
  
+    @Override
     public ReportDTO  findByIdReport(String idReport ){
         QueryReport queryReport = reportRepository.findByIdReport(idReport);
         if (queryReport == null) {
@@ -44,6 +40,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
         return convertReportToDTO(queryReport);
     }
   
+    @Override
     public List<ReportDTO> findAllReports() {
         List<QueryReport> reports = reportRepository.findAll();
         

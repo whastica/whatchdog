@@ -25,11 +25,12 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
 
     private final IssueRepository issueRepository;
     private final ReportRepository reportRepository;
-    private EventPublisher eventPublisher;
+    private final EventPublisher eventPublisher;
 
-    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, ReportRepository reportRepository) {
+    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, ReportRepository reportRepository, EventPublisher eventPublisher) {
         this.issueRepository = issueRepository;
         this.reportRepository = reportRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
