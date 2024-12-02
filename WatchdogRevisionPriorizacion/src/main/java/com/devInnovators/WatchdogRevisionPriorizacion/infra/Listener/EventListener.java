@@ -32,62 +32,65 @@ public class EventListener {
     }
 
     
-
     @RabbitListener(queues = RabbitMQConfig.QUEUE_REPORTE_ACTUALIZADO)
     public void onReportUpdate(UpdateReportEvent event) {
+        // Log inicial para verificar si el listener recibe el evento
+        log.info("Listener activado. Evento recibido: {}", event);
 
         try {
-            // Log de los detalles del evento recibido
-            log.info("Evento recibido: id={}, description={}, admincId={}, updateDate={}", 
-                event.getId(), event.getDescription(), event.getAdmincId(), event.getUpdateDate());
-    
-            // 1. Validar que el reporte tiene los detalles necesarios
-            // Buscar el reporte en la base de datos usando el ID recibido
-            Report report = reportRepository.findById(event.getId())
+            // Validar el evento
+            validateEvent(event);
+
+            // Obtener y actualizar el reporte
+            Report report = updateReport(event);
+
+            // Publicar el evento revisado
+            publishRevisedEvent(report);
+
+        } catch (IllegalArgumentException e) {
+            log.error("Error procesando el evento UpdateReportEvent: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Error inesperado procesando el evento UpdateReportEvent", e);
+        }
+    }
+
+    private void validateEvent(UpdateReportEvent event) {
+        if (event.getId() == null || event.getDescription() == null || event.getStatus() == null) {
+            throw new IllegalArgumentException("El evento no contiene todos los campos necesarios");
+        }
+    }
+
+    private Report updateReport(UpdateReportEvent event) {
+        Report report = reportRepository.findById(event.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado con ID: " + event.getId()));
-    
-            // Verificar que los campos necesarios estén presentes en el reporte (descripción, categoría, estado, etc.)
-            if (report.getDescription() == null || report.getCategoryIssue() == null || report.getStatus() == null) {
-                throw new IllegalArgumentException("Faltan detalles necesarios en el reporte");
-            }
-    
-            // 2. Actualizar el reporte con los nuevos detalles del evento
-            report.setDescription(event.getDescription());
-            report.setStatus(event.getStatus());
-            report.setCategoryIssue(event.getCategoryIssue());
-            report.setCoordinates(event.getCoordinates());
-            report.setUpdateDate(event.getUpdateDate());
-            report.setFotoUrl(event.getFotoUrl());
-    
-            // Si el evento tiene un nuevo issueId, actualizar también la relación con el Issue
-            if (event.getIssueId() != null) {
-                Issue issue = issueRepository.findById(event.getIssueId())
+
+        report.setDescription(event.getDescription());
+        report.setStatus(event.getStatus());
+        report.setCategoryIssue(event.getCategoryIssue());
+        report.setCoordinates(event.getCoordinates());
+        report.setUpdateDate(event.getUpdateDate());
+        report.setFotoUrl(event.getFotoUrl());
+
+        if (event.getIssueId() != null) {
+            Issue issue = issueRepository.findById(event.getIssueId())
                     .orElseThrow(() -> new IllegalArgumentException("Issue no encontrado con ID: " + event.getIssueId()));
-                report.setIssue(issue); // Actualizamos la relación con el Issue
-            }
-    
-            // Guardamos el reporte actualizado en la base de datos
-            reportRepository.save(report);
-    
-            // 3. Publicar el evento RevisedReportEvent
-            RevisedReportEvent revisedReportEvent = new RevisedReportEvent(
+            report.setIssue(issue);
+        }
+
+        return reportRepository.save(report);
+    }
+
+    private void publishRevisedEvent(Report report) {
+        RevisedReportEvent revisedReportEvent = new RevisedReportEvent(
                 report.get_id(),
-                report.getAdminC().getId(),  // El ID del administrador encargado de la actualización
+                report.getAdminC() != null ? report.getAdminC().getId() : null,
                 report.getStatus(),
                 report.getCategoryIssue(),
                 report.getUpdateDate(),
-                report.getIssue().getId()  // O si es null, puede ser un valor predeterminado
-            );
-            
-            // Publicamos el evento de reporte actualizado
-            eventPublisher.publishRevisedReportEvent(revisedReportEvent);
-    
-        } catch (IllegalArgumentException e) {
-            // Manejo de errores: logueamos el error y no realizamos ninguna acción adicional
-            log.error("Error procesando el evento UpdateReportEvent: {}", e.getMessage());
-        } catch (Exception e) {
-            // Manejo genérico de excepciones, logueamos cualquier otra excepción
-            log.error("Error inesperado procesando el evento UpdateReportEvent", e);
-        }
+                report.getIssue() != null ? report.getIssue().getId() : null
+        );
+
+        eventPublisher.publishRevisedReportEvent(revisedReportEvent);
+        log.info("Evento RevisedReportEvent publicado: {}", revisedReportEvent);
     }
 }

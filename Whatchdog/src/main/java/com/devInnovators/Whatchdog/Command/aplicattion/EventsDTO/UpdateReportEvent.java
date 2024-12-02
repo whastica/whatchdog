@@ -3,7 +3,7 @@ package com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-
+import com.devInnovators.Whatchdog.Command.domain.model.AdminC;
 import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
 import com.devInnovators.Whatchdog.Command.domain.model.Coordinates;
 import com.devInnovators.Whatchdog.Command.domain.model.Status;
@@ -30,5 +30,6 @@ public class UpdateReportEvent implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime updateDate;        
     private String fotoUrl;
+
 }
 

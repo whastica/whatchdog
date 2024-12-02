@@ -3,7 +3,14 @@ package com.devInnovators.Whatchdog.Command.infra.Config;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
+
+import org.springframework.amqp.rabbit.annotation.EnableRabbit;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
+
+import java.text.SimpleDateFormat;
 
 import org.springframework.amqp.core.Binding;
 
@@ -15,6 +22,7 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 
 
 @Configuration
+@EnableRabbit
 public class RabbitMQConfigCommand {
      //Canal de comunicación
     public static final String EXCHANGE_NAME = "reporte_exchange";
@@ -30,21 +38,37 @@ public class RabbitMQConfigCommand {
     public static final String ROUTING_KEY_REPORTE_ELIMINADO = "reporte.eliminado";
     public static final String ROUTING_KEY_REPORTE_REVISADO = "reporte.revisado";
 
+
     @Bean
     public TopicExchange exchangeCommand() {
         return new TopicExchange(EXCHANGE_NAME);
     }
 
     @Bean
-    public Jackson2JsonMessageConverter messageConverterCommand() {
-        return new Jackson2JsonMessageConverter();
+    public ObjectMapper objectMapper() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.registerModule(new JavaTimeModule());  // Soporte para LocalDateTime
+        objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+        objectMapper.setDateFormat(new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss"));
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        return objectMapper;
     }
     @Bean
-    public RabbitTemplate rabbitTemplateCommand(ConnectionFactory connectionFactoryCommand) {
-        RabbitTemplate rabbitTemplateCommand = new RabbitTemplate(connectionFactoryCommand);
-        rabbitTemplateCommand.setMessageConverter(messageConverterCommand());
-        return rabbitTemplateCommand;
+    public Jackson2JsonMessageConverter messageConverter(ObjectMapper objectMapper) {
+        return new Jackson2JsonMessageConverter(objectMapper);  // Usa tu ObjectMapper personalizado
     }
+    @Bean
+    public RabbitTemplate rabbitTemplateCommand(ConnectionFactory connectionFactoryCommand, Jackson2JsonMessageConverter messageConverter) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactoryCommand);
+        rabbitTemplate.setMessageConverter(messageConverter);
+        return rabbitTemplate;
+    }
+    
+    /* @Bean
+    public Jackson2JsonMessageConverter messageConverterCommand() {
+        return new Jackson2JsonMessageConverter();
+    } */
+  
 
     @Bean
     public Queue reporteCreateQueue() {

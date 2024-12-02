@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
+import org.hibernate.sql.Update;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -24,7 +25,9 @@ import com.devInnovators.Whatchdog.Command.domain.repository.CommandCommentRepos
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandIssueRepository;
 import com.devInnovators.Whatchdog.Command.domain.repository.CommandReportRepository;
 import com.devInnovators.Whatchdog.Command.exception.ResourceNotFoundException;
+import com.devInnovators.Whatchdog.Command.infra.Publisher.EventPublisher;
 import com.devInnovators.Whatchdog.Sync.serviceSync.SyncService;
+import com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO.UpdateReportEvent;
 
 @Service
 public class CommandReportServiceImpl implements CommandReportServiceInterface {
@@ -34,16 +37,20 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
     private final CommandIssueRepository issueRepository; // Asegúrate de tener un repositorio para Problem
     private final CommandAdminCRepository adminCRepository;
     private final CommandCommentRepository commentRepository;
+    private final EventPublisher eventPublisher;
     
     @Autowired
     private SyncService syncService;
 
-    public CommandReportServiceImpl(CommandReportRepository reportRepository, CommandCitizenRepository citizenRepository,CommandIssueRepository issueRepository, CommandAdminCRepository admincRepository, CommandCommentRepository commentRepository) {
+    public CommandReportServiceImpl(CommandReportRepository reportRepository,
+     CommandCitizenRepository citizenRepository,CommandIssueRepository issueRepository,
+      CommandAdminCRepository admincRepository, CommandCommentRepository commentRepository, EventPublisher eventPublisher) {
         this.reportRepository = reportRepository;
         this.citizenRepository = citizenRepository;
         this.issueRepository = issueRepository;
         this.adminCRepository= admincRepository;
         this.commentRepository= commentRepository;
+        this.eventPublisher = eventPublisher;
     }
 
 
@@ -176,6 +183,18 @@ public class CommandReportServiceImpl implements CommandReportServiceInterface {
             // Guardar el reporte actualizado en la base de datos
             Report updatedReport = reportRepository.save(existingReport);
 
+            System.out.println("Antes de publicar el evento...");
+            //publicar evento de reporte actualizado
+            UpdateReportEvent updatedReportEvent = 
+            new UpdateReportEvent(updatedReport.get_id(), 
+            updatedReport.getDescription(), updatedReport.getAdminC() != null ? updatedReport.getAdminC().getId() : null,
+             updatedReport.getStatus(), updatedReport.getCategoryIssue(),
+             updatedReport.getIssue() != null ? updatedReport.getIssue().getId() : null,
+             updatedReport.getCoordinates(),updatedReport.getUpdateDate(),
+                updatedReport.getFotoUrl()
+              );
+            eventPublisher.publishUpdateReportEvent(updatedReportEvent);
+            System.out.println("Después de publicar el evento...");
             syncService.syncReportById(_id);
             
 

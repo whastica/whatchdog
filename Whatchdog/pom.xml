@@ -11,6 +11,7 @@
 	<groupId>com.devInnovators</groupId>
 	<artifactId>Whatchdog</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
+	<packaging>jar</packaging>
 	<name>Whatchdog</name>
 	<description>Demo project for Spring Boot</description>
 	<url/>
@@ -35,6 +36,22 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.15.2</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-databind</artifactId>
+			<version>2.15.2</version> <!-- Usa la misma versión de jackson-databind -->
+		</dependency>
+		<!-- <dependency>
+			<groupId>com.fasterxml.jackson.datatype</groupId>
+			<artifactId>jackson-datatype-jsr310</artifactId>
+			<version>2.15.2</version> 
+		</dependency> -->
+
 			 <!-- RabbitMQ starter para Spring Boot -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

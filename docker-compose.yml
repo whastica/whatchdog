@@ -1,0 +1,122 @@
+
+
+services:
+  rabbitmq:
+    image: rabbitmq:management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"  # Puerto para conexiones de mensajería
+      - "15672:15672"  # Puerto para la interfaz web de administración
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+      
+  # Microservicio 1: Watchdog (CQRS)
+  whatchdog:
+    build:
+      context: ./whatchdog
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://watchdog-mysql:3306/watchdogdb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_DATA_MONGODB_URI: mongodb://watchdog-mongo:27017/watchdogdb
+      SPRING_RABBITMQ_HOST: rabbitmq  # Cambiado a "rabbitmq" en lugar de "localhost"
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - watchdog-mysql
+      - watchdog-mongo
+      - rabbitmq
+
+  # Microservicio 2: WatchdogRevisionPriorizacion
+  watchdogrevisionpriorizacion:
+    build:
+      context: ./WatchdogRevisionPriorizacion
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://prioritization-mysql:3306/watchdogRevisiondb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq  # Cambiado a "rabbitmq" en lugar de "localhost"
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - prioritization-mysql
+      - rabbitmq
+
+  # Microservicio 3: SeguimientoResolucion
+  seguimientoresolucion:
+    build:
+      context: ./SeguimientoResolucion
+      dockerfile: Dockerfile
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://resolution-mysql:3306/seguimientoResoluciondb
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_RABBITMQ_HOST: rabbitmq  # Cambiado a "rabbitmq" en lugar de "localhost"
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+    depends_on:
+      - resolution-mysql
+      - rabbitmq
+
+  # Base de datos MySQL para Watchdog (Microservicio 1)
+  watchdog-mysql:
+    image: mysql:8.0
+    container_name: watchdog-mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: watchdogdb
+    volumes:
+      - watchdog-mysql-data:/var/lib/mysql
+
+  # MongoDB para Watchdog (Microservicio 1)
+  watchdog-mongo:
+    image: mongo:5.0
+    container_name: watchdog-mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - watchdog-mongo-data:/data/db
+
+  # Base de datos MySQL para WatchdogRevisionPriorizacion (Microservicio 2)
+  prioritization-mysql:
+    image: mysql:8.0
+    container_name: prioritization-mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: watchdogRevisiondb
+    volumes:
+      - prioritization-mysql-data:/var/lib/mysql
+
+  # Base de datos MySQL para SeguimientoResolucion (Microservicio 3)
+  resolution-mysql:
+    image: mysql:8.0
+    container_name: resolution-mysql
+    ports:
+      - "3308:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: seguimientoResoluciondb
+    volumes:
+      - resolution-mysql-data:/var/lib/mysql
+
+volumes:
+  watchdog-mysql-data:
+  watchdog-mongo-data:
+  prioritization-mysql-data:
+  resolution-mysql-data:
