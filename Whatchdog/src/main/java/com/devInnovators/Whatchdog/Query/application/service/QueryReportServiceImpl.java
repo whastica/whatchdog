@@ -2,7 +2,7 @@ package com.devInnovators.Whatchdog.Query.application.service;
 
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.mongodb.core.MongoTemplate;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
@@ -14,27 +14,24 @@ import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEven
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
 /* import com.devInnovators.Whatchdog.Command.domain.model.Report;
 import com.devInnovators.Whatchdog.Query.application.DTO.AdminDTO; */
-import com.devInnovators.Whatchdog.Query.application.DTO.CitizenDTO;
+
 import com.devInnovators.Whatchdog.Query.application.DTO.CommentDTO;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryAdminC;
+
 /* import com.devInnovators.Whatchdog.Query.application.DTO.IssueDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.CoordinatesDTO;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryAdminC; */
-import com.devInnovators.Whatchdog.Query.domain.model.QueryCitizen;
+
 import com.devInnovators.Whatchdog.Query.domain.model.QueryComment;
-import com.devInnovators.Whatchdog.Query.domain.model.QueryIssue;
+
 /* import com.devInnovators.Whatchdog.Query.domain.model.QueryCoordinates;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryIssue; */
 import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
 import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
 import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryCitizenRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryIssueRepository;
-import com.devInnovators.Whatchdog.Query.domain.repository.QueryAdminCRepository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+
 import java.util.stream.Collectors;
 
 @Service

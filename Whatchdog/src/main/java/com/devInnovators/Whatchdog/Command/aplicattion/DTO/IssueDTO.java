@@ -3,11 +3,10 @@ package com.devInnovators.Whatchdog.Command.aplicattion.DTO;
 
 import java.util.List;
 
-import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
 import com.devInnovators.Whatchdog.Command.domain.model.Priority;
 import com.devInnovators.Whatchdog.Command.domain.model.ResolutionTeam;
 import com.devInnovators.Whatchdog.Command.domain.model.StatusIssue;
-import com.devInnovators.Whatchdog.Command.domain.model.CategoryIssue;
+
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

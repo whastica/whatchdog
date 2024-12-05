@@ -4,7 +4,7 @@ import java.util.List;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.IssueDTO;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.ReportDTO;
-import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.RevisedReportEvent;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Priority;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.StatusIssue;
 
@@ -20,6 +20,6 @@ public interface RevisionPriorizacionServiceInterface {
     // Método para obtener reportes priorizados (llamada al servicio de reportes y organización local)
     List<ReportDTO> prioritizeReports(List<ReportDTO> reports, Priority priority);
 
-    void processUpdateReport(UpdateReportEvent event);
+    void RevisedReport(RevisedReportEvent event);
 
 }

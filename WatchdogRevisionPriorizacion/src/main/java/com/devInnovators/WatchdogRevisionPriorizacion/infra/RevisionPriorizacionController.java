@@ -15,7 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.IssueDTO;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.ReportDTO;
-import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.RevisedReportEvent;
+
 import com.devInnovators.WatchdogRevisionPriorizacion.application.interfaces.RevisionPriorizacionServiceInterface;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Priority;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.StatusIssue;
@@ -59,25 +60,11 @@ public class RevisionPriorizacionController {
         return ResponseEntity.ok(prioritizedReports);
     }
 
-    // Actualizar un reporte y disparar el evento de actualización
+    // Revisar un reporte
     @PutMapping("/reports/{reportId}")
-    public ResponseEntity<Void> updateReport(@PathVariable String reportId, @RequestBody UpdateReportEvent updateReportEvent) {
-        // Crear el evento para la actualización del reporte
-        UpdateReportEvent event = new UpdateReportEvent(
-            reportId,                              // id
-            updateReportEvent.getDescription(),    // description
-            updateReportEvent.getAdmincId(),       // admincId
-            updateReportEvent.getStatus(),         // status
-            updateReportEvent.getCategoryIssue(),  // categoryIssue
-            updateReportEvent.getIssueId(),        // issueId
-            updateReportEvent.getCoordinates(),    // coordinates
-            updateReportEvent.getUpdateDate(),     // updateDate
-            updateReportEvent.getFotoUrl()         // fotoUrl
-        );
-
-        // Llamar al método del servicio para procesar la actualización y publicar el evento
-        revisionPriorizacionService.processUpdateReport(event);
-
-        return ResponseEntity.ok().build(); // Responder correctamente después de procesar el evento
+    public ResponseEntity<ReportDTO> reviseReport(@PathVariable String reportId, @RequestBody RevisedReportEvent event) {
+        revisionPriorizacionService.RevisedReport(event);
+        return ResponseEntity.ok().build();
     }
 }
+

@@ -3,48 +3,78 @@ package com.devInnovators.Whatchdog.Command.infra.Listener;
 import org.springframework.stereotype.Component;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 
-import com.devInnovators.Whatchdog.Command.aplicattion.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Command.aplicattion.EventsDTO.RevisedReportEvent;
-import com.devInnovators.Whatchdog.Command.aplicattion.service.CommandReportServiceImpl;
+import com.devInnovators.Whatchdog.Command.domain.model.AdminC;
+import com.devInnovators.Whatchdog.Command.domain.model.Report;
+import com.devInnovators.Whatchdog.Command.domain.repository.CommandAdminCRepository;
+import com.devInnovators.Whatchdog.Command.domain.repository.CommandReportRepository;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 
 
 @Component
 public class EventListener {
 
-    private final CommandReportServiceImpl commandReportService;
+    private static final Logger log = LoggerFactory.getLogger(EventListener.class);
 
-    public EventListener(CommandReportServiceImpl commandReportService) {
-        this.commandReportService = commandReportService;
+    private final CommandReportRepository reportRepository;
+    private final CommandAdminCRepository adminCRepository;
+
+    public EventListener(CommandReportRepository reportRepository, CommandAdminCRepository adminCRepository) {
+        this.reportRepository = reportRepository;
+        this.adminCRepository = adminCRepository;
     }
 
-    @RabbitListener(queues ="reporteRevisadoQueue")
-    public void reporteRevisado(RevisedReportEvent revisedReportEvent) {
-        try {
-            System.out.println("Recibido evento ReporteRevisado: " + revisedReportEvent);
-               // Log para verificar que el id llega correctamente
-            System.out.println("Received idReport: " + revisedReportEvent.get_id());
-           // Convertir RevisedReportEvent a ReportDTO
-           ReportDTO reportDTO = convertToReportDTO(revisedReportEvent);
+    @RabbitListener(queues = "reporteRevisadoQueue")
+    public void reporteRevisado(RevisedReportEvent event) {
+        log.info("Listener activado. Evento RevisedReport recibido: {}", event);
 
-           // Llamar al método updateReport con los parámetros correctos
-           commandReportService.updateReport(revisedReportEvent.get_id(), reportDTO);
+        try {
+            // Validar el evento
+            validateRevisedEvent(event);
+
+            // Procesar el reporte revisado
+            Report report = processRevisedReport(event);
+
+            log.info("Reporte actualizado exitosamente con ID: {}", report.get_id());
+        } catch (IllegalArgumentException e) {
+            log.error("Error procesando el evento RevisedReportEvent: {}", e.getMessage());
         } catch (Exception e) {
-            // Manejo de errores, como loggear o capturar el evento para investigar
-            System.out.println("Error procesando el evento RevisedReportEvent: " + e);
+            log.error("Error inesperado procesando el evento RevisedReportEvent", e);
         }
     }
-     // Método para convertir RevisedReportEvent a ReportDTO
-     private ReportDTO convertToReportDTO(RevisedReportEvent revisedReportEvent) {
-        ReportDTO reportDTO = new ReportDTO();
-        System.out.println("Converting RevisedReportEvent to ReportDTO: " + revisedReportEvent.get_id());
-        reportDTO.set_id(revisedReportEvent.get_id());
-        reportDTO.setIdAdminC(revisedReportEvent.getAdmincId());
-        reportDTO.setStatus(revisedReportEvent.getStatus()); 
-        reportDTO.setCategoryIssue(revisedReportEvent.getCategoryIssue());
-        reportDTO.setUpdateDate(revisedReportEvent.getUpdateDate());
-        reportDTO.setIdissue(revisedReportEvent.getIssueId());
 
-        return reportDTO;
+    private void validateRevisedEvent(RevisedReportEvent event) {
+        if (event.get_id() == null || event.getStatus() == null || event.getUpdateDate() == null) {
+            throw new IllegalArgumentException("El evento RevisedReportEvent no contiene todos los campos necesarios");
+        }
     }
-    
+
+    private Report processRevisedReport(RevisedReportEvent event) {
+        // Buscar el reporte en la base de datos
+        Report report = reportRepository.findById(event.get_id())
+                .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado con ID: " + event.get_id()));
+
+        // Actualizar los campos necesarios del reporte
+        report.setStatus(event.getStatus());
+        report.setUpdateDate(event.getUpdateDate());
+
+        if (event.getAdmincId() != null) {
+            AdminC admin = adminCRepository.findById(event.getAdmincId())
+                    .orElseThrow(() -> new IllegalArgumentException("Admin no encontrado con ID: " + event.getAdmincId()));
+            report.setAdminC(admin);
+        }
+
+        if (event.getCategoryIssue() != null) {
+            report.setCategoryIssue(event.getCategoryIssue());
+        }
+
+        // Guardar y devolver el reporte actualizado
+        return reportRepository.save(report);
+    }
+
 }

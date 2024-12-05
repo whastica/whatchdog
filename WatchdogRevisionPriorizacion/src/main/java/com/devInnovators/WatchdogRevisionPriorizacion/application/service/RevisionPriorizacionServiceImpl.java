@@ -8,14 +8,18 @@ import org.springframework.stereotype.Service;
 
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.IssueDTO;
 import com.devInnovators.WatchdogRevisionPriorizacion.application.DTO.ReportDTO;
-import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.UpdateReportEvent;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.CreateIssueEvent;
+import com.devInnovators.WatchdogRevisionPriorizacion.application.eventDTO.RevisedReportEvent;
+
 import com.devInnovators.WatchdogRevisionPriorizacion.application.interfaces.RevisionPriorizacionServiceInterface;
+import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.AdminC;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Issue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Priority;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.Report;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.model.StatusIssue;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.repository.IssueRepository;
 import com.devInnovators.WatchdogRevisionPriorizacion.domain.repository.ReportRepository;
+import com.devInnovators.WatchdogRevisionPriorizacion.domain.repository.AdminRepository;
 import com.devInnovators.WatchdogRevisionPriorizacion.infra.publisher.EventPublisher;
 
 import jakarta.transaction.Transactional;
@@ -25,11 +29,15 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
 
     private final IssueRepository issueRepository;
     private final ReportRepository reportRepository;
+    private final AdminRepository adminRepository;
     private EventPublisher eventPublisher;
 
-    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, ReportRepository reportRepository) {
+    public RevisionPriorizacionServiceImpl(IssueRepository issueRepository, ReportRepository reportRepository,
+     AdminRepository adminRepository, EventPublisher eventPublisher) {
         this.issueRepository = issueRepository;
         this.reportRepository = reportRepository;
+        this.adminRepository = adminRepository;
+        this.eventPublisher = eventPublisher;
     }
 
     @Override
@@ -41,7 +49,40 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
         issue.setStatusIssue(StatusIssue.ASIGNADO); // Estado inicial
         issue.setPriority(issueDTO.getPriority());
 
+        // Mapeo de reportIds a reportList
+        if (issueDTO.getReportIds() != null && !issueDTO.getReportIds().isEmpty()) {
+            List<Report> reports = issueDTO.getReportIds().stream()
+                    .map(reportId -> {
+                        Report report = reportRepository.findById(reportId)
+                                .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado: " + reportId));
+                        report.setIssue(issue); // Establece la relación bidireccional
+                        return report;
+                    })
+                    .collect(Collectors.toList());
+            issue.setReportList(reports);
+        }
+            // Mapeo de admincId a AdminC
+        if (issueDTO.getAdmincId() != null) {
+            AdminC adminc = adminRepository.findById(issueDTO.getAdmincId())
+                    .orElseThrow(() -> new IllegalArgumentException("AdminC no encontrado: " + issueDTO.getAdmincId()));
+            issue.setAdminc(adminc);
+        }
         Issue savedIssue = issueRepository.save(issue);
+        System.out.println("Antes de publicar el evento...");
+           // Publicar el evento a RabbitMQ
+         // Construir el evento CreateIssueEvent
+        CreateIssueEvent event = new CreateIssueEvent(
+            savedIssue.getId(),
+            savedIssue.getCategoryIssue(),
+            savedIssue.getPriority(),
+            savedIssue.getStatusIssue(),
+            savedIssue.getReportList() != null ? savedIssue.getReportList().stream()
+                .map(Report::get_id)
+                .collect(Collectors.toList()) : null,
+            savedIssue.getAdminc() != null ? savedIssue.getAdminc().getId() : null
+        );
+        eventPublisher.publishCreateIssueEvent(event);
+        System.out.println("Después de publicar el evento...");
         return convertToDTO(savedIssue);
     }
 
@@ -85,44 +126,33 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
     }*/
 
     @Override
-    public void processUpdateReport(UpdateReportEvent event) {
+    public void RevisedReport(RevisedReportEvent event) {
         // Obtener el reporte usando su ID
-        Report report = reportRepository.findById(event.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado con ID: " + event.getId()));
+    Report report = reportRepository.findById(event.get_id())
+    .orElseThrow(() -> new IllegalArgumentException("Reporte no encontrado con ID: " + event.get_id()));
 
-        // Actualizar los campos del reporte con los valores del evento
-        report.setDescription(event.getDescription());
+    // Actualizar los campos del reporte con los valores del evento
+        report.setAdminC(adminRepository.findById(event.getAdmincId())
+            .orElseThrow(() -> new IllegalArgumentException("AdminC no encontrado con ID: " + event.getAdmincId())));
         report.setStatus(event.getStatus()); // Actualizar el estado
         report.setCategoryIssue(event.getCategoryIssue()); // Actualizar la categoría
-        report.setCoordinates(event.getCoordinates()); // Actualizar las coordenadas
         report.setUpdateDate(event.getUpdateDate()); // Actualizar la fecha de actualización
-        report.setFotoUrl(event.getFotoUrl()); // Actualizar la URL de la foto
-
-        // Si el evento tiene un nuevo 'issueId', actualizar también la relación con el Issue
-        if (event.getIssueId() != null) {
-            Issue issue = issueRepository.findById(event.getIssueId())
-                .orElseThrow(() -> new IllegalArgumentException("Issue no encontrado con ID: " + event.getIssueId()));
-            report.setIssue(issue); // Establecer la relación con el issue
-        }
 
         // Guardar el reporte actualizado
         reportRepository.save(report);
 
         // 5. Disparar el evento de actualización
-        UpdateReportEvent updatedReportEvent = new UpdateReportEvent(
+        RevisedReportEvent eventRevised = new RevisedReportEvent(
             report.get_id(),
-            report.getDescription(),
-            report.getAdminC() != null ? report.getAdminC().getId() : null,  // Aquí agregamos admincId
+            report.getAdminC().getId(), // Asegurar que adminC no sea nulo
             report.getStatus(),
             report.getCategoryIssue(),
-            report.getIssue() != null ? report.getIssue().getId() : null,
-            report.getCoordinates(),
             report.getUpdateDate(),
-            report.getFotoUrl()
+            report.getIssue() != null ? report.getIssue().getId() : null // Validar que issue no sea nulo
         );
 
         // Publicar el evento
-        eventPublisher.publishUpdateReportEvent(updatedReportEvent);
+        eventPublisher.publishRevisedReportEvent(eventRevised); 
     }
     @Override
     public List<ReportDTO> prioritizeReports(List<ReportDTO> reports, Priority priority) {
@@ -137,6 +167,17 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
         dto.setPriority(issue.getPriority());
         dto.setStatusIssue(issue.getStatusIssue());
         dto.setResolutionTeam(issue.getResolutionTeam());
+          // Convertir la lista de reportes a una lista de IDs
+          if (issue.getReportList() != null) {
+            dto.setReportIds(issue.getReportList().stream()
+                    .map(Report::get_id)
+                    .collect(Collectors.toList()));
+        }
+
+        // Establecer admincId
+        if (issue.getAdminc() != null) {
+            dto.setAdmincId(issue.getAdminc().getId());
+        }
         // Mapear otros campos si es necesario
         return dto;
     }
