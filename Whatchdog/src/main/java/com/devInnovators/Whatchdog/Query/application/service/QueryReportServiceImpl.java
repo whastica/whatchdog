@@ -1,14 +1,18 @@
 package com.devInnovators.Whatchdog.Query.application.service;
 
 
+
 import org.springframework.beans.factory.annotation.Autowired;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
-
-
+import com.devInnovators.Whatchdog.Command.exception.ResourceNotFoundException;
+import com.devInnovators.Whatchdog.Query.application.DTO.CommentDTO;
 import com.devInnovators.Whatchdog.Query.application.DTO.ReportDTO;
 import com.devInnovators.Whatchdog.Query.application.EventsDTO.RevisedReportEvent;
 import com.devInnovators.Whatchdog.Query.application.interfaces.QueryReportServiceInterface;
@@ -34,15 +38,17 @@ import java.util.List;
 
 import java.util.stream.Collectors;
 
+import com.devInnovators.Whatchdog.Query.domain.model.QueryComment;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryReport;
+import com.devInnovators.Whatchdog.Query.domain.model.QueryStatus;
+import com.devInnovators.Whatchdog.Query.domain.repository.QueryReportRepository;
+
+
 @Service
 public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
  
     private final QueryReportRepository reportRepository;
-
-
-
-    @Autowired
  
     public QueryReportServiceImpl(QueryReportRepository reportRepository) {
         this.reportRepository = reportRepository;
@@ -50,6 +56,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
     }
     
  
+    @Override
     public ReportDTO  findByIdReport(String idReport ){
         QueryReport queryReport = reportRepository.findByIdReport(idReport);
         if (queryReport == null) {
@@ -58,6 +65,7 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
         return convertReportToDTO(queryReport);
     }
   
+    @Override
     public List<ReportDTO> findAllReports() {
         List<QueryReport> reports = reportRepository.findAll();
         
@@ -118,25 +126,21 @@ public class QueryReportServiceImpl implements QueryReportServiceInterface {
 
     @Override
     public void updateReportStatus(RevisedReportEvent revisedReportEvent) {
-            // Buscar el reporte en la base de datos usando el ID del evento
-            QueryReport queryReport = reportRepository.findByIdReport(revisedReportEvent.getId());
-            if (queryReport == null) {
-                throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Report not found in Query database");
-            }
+        // Buscar el reporte en la base de datos usando el ID del evento
+        QueryReport queryReport = reportRepository.findByIdReport(revisedReportEvent.getId());
+        if (queryReport == null) {
+            throw new ResourceNotFoundException("Reporte no encontrado con id: " + revisedReportEvent.getId());
+        }
 
-            // Actualizar el estado y otros atributos relevantes
-            queryReport.setStatus(revisedReportEvent.getStatus());
-            queryReport.setCategoryIssue(revisedReportEvent.getCategoryIssue().toString());
-            queryReport.setUpdateDate(revisedReportEvent.getUpdateDate());
-            queryReport.setIdissue(revisedReportEvent.getIssueId());
+        // Actualizar el estado y otros atributos relevantes
+        queryReport.setStatus(revisedReportEvent.getStatus());
+        queryReport.setCategoryIssue(revisedReportEvent.getCategoryIssue().toString());
+        queryReport.setUpdateDate(revisedReportEvent.getUpdateDate());
+        queryReport.setIdissue(revisedReportEvent.getIssueId());
 
-            // Guardar los cambios en la base de datos
-            reportRepository.save(queryReport);
+        // Guardar los cambios en la base de datos
+        reportRepository.save(queryReport);
     } 
- 
-    
-
-    
 
     // Método privado para la conversión de Report a ReportDTO
     private ReportDTO convertReportToDTO(QueryReport report) {  

@@ -37,8 +37,6 @@ public class RevisionPriorizacionServiceImpl implements RevisionPriorizacionServ
         this.issueRepository = issueRepository;
         this.reportRepository = reportRepository;
         this.adminRepository = adminRepository;
-        this.eventPublisher = eventPublisher;
-    }
 
     @Override
     @Transactional
